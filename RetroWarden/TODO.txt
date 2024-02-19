@@ -1,0 +1,8 @@
+DONE -- Properly handle app shutdown - currently window is hanging
+Add context aware statusbar hotkey actions (when item is selected, F2 - View, F3 Edit, etc.)
+Add some kind of working modal for fetching initial vault, and perhaps other requests
+Decide on whether or not to make table view more like Windows Explorer (show folders and collections as well as items based on treeview selection)
+Update table for multiselect actions (add to folder, move to collection, etc.)
+Error Handling! :)
+Make vault proxy methods async to help UI performance
+
