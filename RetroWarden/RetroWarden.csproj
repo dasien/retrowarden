@@ -20,6 +20,8 @@
 
     <ItemGroup>
       <Compile Remove="Views\MainView2.cs" />
+      <Compile Remove="Dialogs\ConfirmDialog.cs" />
+      <Compile Remove="Dialogs\ErrorDialog.cs" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Retrowarden.Models;
@@ -187,7 +186,6 @@ namespace Retrowarden.Utils
             
             // Reset arguments.
             _bwcli.StartInfo.ArgumentList.Clear();
-            
         }
 
         #region Event Handlers
@@ -216,6 +214,14 @@ namespace Retrowarden.Utils
             get
             {
                 return _cmdExitCode;
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get
+            {
+                return _error;
             }
         }
         #endregion

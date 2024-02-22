@@ -1,6 +1,5 @@
 
 using Terminal.Gui;
-using Retrowarden.Utils;
 
 namespace Retrowarden.Dialogs
 {
@@ -16,7 +15,7 @@ namespace Retrowarden.Dialogs
             // Create Ok button.
             Button okButton = new Button(8, 2, okButtonText);
             okButton.Clicked += OkButton_Clicked;
-
+            
             // Create Cancel button.
             Button cancelButton = new Button(20, 2, cancelButtonText);
             cancelButton.Clicked += CancelButton_Clicked;

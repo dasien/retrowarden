@@ -22,7 +22,7 @@ namespace Retrowarden.Views
             // Update controls based on view state.
             SetupView();
         }
-
+        
         private void SetupView()
         { 
             // Create combobox data source.
@@ -78,6 +78,46 @@ namespace Retrowarden.Views
         public void Show()
         {
             Application.Run(this);
+        }
+        
+        private void CancelButton_Clicked()
+        {
+            // Close dialog.
+            Application.RequestStop();
+        }
+
+        private void SaveButtonClicked()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CopyPasswordButtonClicked()
+        {
+            // Copy password to clipboard.
+            Clipboard.TrySetClipboardData(_item.Login.Password);
+
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
+
+        }
+
+        private void ViewPasswordButtonClicked()
+        {
+            // Toggle Flag.
+            txtPassword.Secret = !txtPassword.Secret;
+            
+            // Flip button text to opposite action.
+            btnViewPassword.Text = txtPassword.Secret ? "View" : "Hide";
+        }
+
+        private void CopyUserNameButtonClicked()
+        {
+            // Copy password to clipboard.
+            Clipboard.TrySetClipboardData(_item.Login.UserName);
+
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "User name copied to clipboard.", "Ok");
+
         }
     }
 }

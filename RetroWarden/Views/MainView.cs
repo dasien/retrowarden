@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data;
 using System.Text;
 using Terminal.Gui;
@@ -23,7 +23,11 @@ namespace Retrowarden.Views
         private VaultProxy _vaultProxy;
         private SortedDictionary<string, VaultItem> _vaultItems;
         private List<VaultFolder> _folders;
+        private List<VaultCollection> _collections;
         private StringBuilder _aboutMessage;
+        
+        // Used for all long running operation indicators.
+        private BackgroundWorker _worker;
         
         public MainView() 
         {
@@ -56,27 +60,37 @@ namespace Retrowarden.Views
             _aboutMessage.AppendLine (@"\_| \_\___|\__|_|  \___/ \_/\_/ \__,_|_|  \__,_|\___|_| |_|");
             _aboutMessage.AppendLine (@""); 
         }
-        
+
         #region UI Control Helpers
         private void LoadItemTableView(SortedDictionary<string, VaultItem> items)
         {
+            // Create data table.
             DataTable itemTable = new DataTable();
+            
+            // Hide the "Id" column.
             TableView.ColumnStyle style = new TableView.ColumnStyle();
             style.Visible = false;
             DataColumn id = itemTable.Columns.Add("Id");
-
+            
+            // Add this column to table.
             this.tabItems.Style.ColumnStyles.Add(id, style);
             
-            // Add columns.
+            // Add visible columns.
             itemTable.Columns.Add("Site Name");
             itemTable.Columns.Add("User Id");
             
+            // Loop through vault items.
             foreach (VaultItem item in items.Values)
             {
+                // Create data row.
                 DataRow row = itemTable.NewRow();
+                
+                // Set column data.
                 row["Id"] = item.Id;
                 row["Site Name"] = item.ItemName;
                 row["User Id"] = item.Login.UserName;
+                
+                // Add row to table view.
                 itemTable.Rows.Add(row);
             }
             
@@ -90,17 +104,11 @@ namespace Retrowarden.Views
             TreeNode root = new TreeNode("Bitwarden");
             root.Tag = new Tuple<NodeType, string>(NodeType.Root, null);
             
-            // Get folders.
-            _folders = _vaultProxy.ListFolders();
-        
             // Create folders node.
             TreeNode folderNode = ViewUtils.CreateFoldersNode(_folders, _vaultItems);
             
-            // Get collections.
-            List<VaultCollection> collection = _vaultProxy.ListCollections();
-        
             // Create collection node.
-            TreeNode collectionNode = ViewUtils.CreateCollectionsNode(collection, _vaultItems);
+            TreeNode collectionNode = ViewUtils.CreateCollectionsNode(_collections, _vaultItems);
         
             // Create item nodes.
             TreeNode itemNodes = ViewUtils.CreateAllItemsNodes(_vaultItems);
@@ -150,9 +158,207 @@ namespace Retrowarden.Views
             // Create item detail dialog.
             VaultItemDetailView detailView = new VaultItemDetailView(item, _folders, state);
             
+            // Update title.
+            switch (state)
+            {
+                case VaultItemDetailViewState.Create:
+                    detailView.Title = "Create New Item";
+                    break;
+                
+                case VaultItemDetailViewState.Edit:
+                    detailView.Title = "Edit Item - " + item.ItemName;
+                    break;
+                
+                case VaultItemDetailViewState.View:
+                    detailView.Title = "View Item - " + item.ItemName;
+                    break;
+            }
+            
             // Show the view modal.
             detailView.Show();
 
+        }
+        #endregion
+        
+        #region Proxy Workers
+        private void RunLoginWorker(string userId, string password)
+        {
+            // Get background worker.
+            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            
+            // Create working dialog.
+            WorkingDialog _workingDialog = new WorkingDialog("Logging in");
+            
+            // Run the login method.
+            _worker.DoWork += (s, e) => 
+            {
+                // Execute the login method.
+                 _vaultProxy.Login(userId, password);
+            };
+            
+            // Add completion event handler.
+            _worker.RunWorkerCompleted += (s, e) => 
+            {   
+                // Check to see if the dialog is present.
+                if (_workingDialog.IsCurrentTop) 
+                {
+                    //Close the dialog
+                    _workingDialog.Hide();
+                }
+                
+                // Clear out the worker.
+                _worker = null;
+            };
+            
+            // Run the worker.
+            _worker.RunWorkerAsync ();
+            
+            // Show working dialog.
+            _workingDialog.Show();
+        }
+        
+        private void RunLogoutWorker()
+        {
+            // Get background worker.
+            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            
+            // Create working dialog.
+            WorkingDialog _workingDialog = new WorkingDialog("Logging out");
+            
+            // Run the fetch method.
+            _worker.DoWork += (s, e) => 
+            {
+                // Try to logout.
+                _vaultProxy.Logout();
+            };
+
+            // Add completion event handler.
+            _worker.RunWorkerCompleted += (s, e) => 
+            {   
+                // Check to see if the dialog is present.
+                if (_workingDialog.IsCurrentTop) 
+                {
+                    //Close the dialog
+                    _workingDialog.Hide();
+                }
+                
+                // Clear out the worker.
+                _worker = null;
+            };
+            
+            // Run the worker.
+            _worker.RunWorkerAsync ();
+            
+            // Show working dialog.
+            _workingDialog.Show();
+        }
+        
+        private void RunGetItemsWorker()
+        {
+            // Get background worker.
+            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            
+            // Create working dialog.
+            WorkingDialog _workingDialog = new WorkingDialog("Syncing Vault Items");
+            
+            // Run the fetch method.
+            _worker.DoWork += (s, e) => 
+            {
+                // Try to fetch vault items.
+                _vaultItems = _vaultProxy.ListVaultItems();
+            };
+
+            // Add completion event handler.
+            _worker.RunWorkerCompleted += (s, e) => 
+            {   
+                // Check to see if the dialog is present.
+                if (_workingDialog.IsCurrentTop) 
+                {
+                    //Close the dialog
+                    _workingDialog.Hide();
+                }
+                
+                // Clear out the worker.
+                _worker = null;
+            };
+            
+            // Run the worker.
+            _worker.RunWorkerAsync ();
+            
+            // Show working dialog.
+            _workingDialog.Show();
+        }
+        
+        private void RunGetFoldersWorker()
+        {
+            // Get background worker.
+            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            
+            // Create working dialog.
+            WorkingDialog _workingDialog = new WorkingDialog("Syncing Folders");
+            
+            // Run the fetch method.
+            _worker.DoWork += (s, e) => 
+            {
+                // Get folders.
+                _folders = _vaultProxy.ListFolders();
+            };
+
+            // Add completion event handler.
+            _worker.RunWorkerCompleted += (s, e) => 
+            {   
+                // Check to see if the dialog is present.
+                if (_workingDialog.IsCurrentTop) 
+                {
+                    //Close the dialog
+                    _workingDialog.Hide();
+                }
+                
+                // Clear out the worker.
+                _worker = null;
+            };
+            
+            // Run the worker.
+            _worker.RunWorkerAsync ();
+            
+            // Show working dialog.
+            _workingDialog.Show();
+        }
+        
+        private void RunGetCollectionsWorker()
+        {
+            // Get background worker.
+            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            
+            // Create working dialog.
+            WorkingDialog _workingDialog = new WorkingDialog("Syncing Collections");
+            
+            // Run the fetch method.
+            _worker.DoWork += (s, e) => 
+            {
+                // Get collections.
+                _collections = _vaultProxy.ListCollections();
+            };
+
+            // Add completion event handler.
+            _worker.RunWorkerCompleted += (s, e) => 
+            {   
+                // Check to see if the dialog is present.
+                if (_workingDialog.IsCurrentTop) 
+                {
+                    //Close the dialog
+                    _workingDialog.Hide();
+                }
+                
+                // Clear out the worker.
+                _worker = null;
+            };
+            
+            // Run the worker.
+            _worker.RunWorkerAsync ();
+            
+            // Show working dialog.
+            _workingDialog.Show();
         }
         #endregion
         
@@ -162,40 +368,51 @@ namespace Retrowarden.Views
             ConnectDialog connectDialog = new ConnectDialog();
 
             connectDialog.Show();
-
+            
             if (connectDialog.OkPressed)
             {
-                // Try to connect to server.
-                _vaultProxy.Login(connectDialog.UserId, connectDialog.Password);
-            
+                // Run login worker and show working dialog.
+                RunLoginWorker(connectDialog.UserId, connectDialog.Password);
+                
                 // Check to see if the login was successful.
                 if (_vaultProxy.ExitCode == "0")
                 {
-                    // Try to fetch vault items.
-                    _vaultItems = _vaultProxy.ListVaultItems();
-                
+                    // Run workers for items, folders, and collections.
+                    RunGetItemsWorker();
+                    
                     // Check to see if items were found.
                     if (_vaultProxy.ExitCode == "0")
                     {
+                        // Run workers for folders and collections.
+                        RunGetFoldersWorker();
+                        RunGetCollectionsWorker();
+
                         LoadTreeView();
                         LoadItemTableView(_vaultItems);
                     }
+                }
+
+                else
+                {
+                    // Show error dialog.
+                    MessageBox.ErrorQuery("Login failed.", _vaultProxy.ErrorMessage, "Ok");
                 }
             }
         }
 
         private void HandleQuitRequest()
         {
-            ConfirmDialog confirmDialog = new ConfirmDialog("Quit.  Are you sure?", 6,40,
-                "_Ok", "Cance_l");
-        
-            confirmDialog.Show();
-        
-            if (confirmDialog.OkPressed)
+            int response = MessageBox.Query("Confirm Action", "Quit.  Are you Sure?", "Ok", "Cancel");
+            
+            // Check to see if the user confirmed action.
+            if (response == 0)
             {
                 // Logout of vault.
-                _vaultProxy.Logout();
-            
+                RunLogoutWorker();
+                
+                // Clear any clipboard contents.
+                Clipboard.TrySetClipboardData("");
+                
                 // Close application.
                 Application.RequestStop(this);
                 Environment.Exit(Environment.ExitCode);
@@ -238,12 +455,32 @@ namespace Retrowarden.Views
         }
         private void HandleUserCopyKeypress()
         {
+            // Get the current item from tableview.
+            DataRow selectedRow = tabItems.Table.Rows[tabItems.SelectedRow];
+           
+            // Get the item associated with this row.
+            VaultItem item = _vaultItems[(string)selectedRow["Id"]];
             
+            // Copy user name to clipboard.
+            Clipboard.TrySetClipboardData(item.Login.UserName);
+            
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "Username copied to clipboard.", "Ok");
         }
         
         private void HandlePwdCopyKeypress()
         {
+            // Get the current item from tableview.
+            DataRow selectedRow = tabItems.Table.Rows[tabItems.SelectedRow];
+           
+            // Get the item associated with this row.
+            VaultItem item = _vaultItems[(string)selectedRow["Id"]];
             
+            // Copy password to clipboard.
+            Clipboard.TrySetClipboardData(item.Login.Password);
+
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
         }
         
         private void HandleItemTableSelectedCellChanged(TableView.SelectedCellChangedEventArgs obj)

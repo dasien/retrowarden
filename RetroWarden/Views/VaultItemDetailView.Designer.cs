@@ -31,22 +31,39 @@ namespace Retrowarden.Views
         private Terminal.Gui.Button btnSave;
         private Terminal.Gui.Button btnCancel;
         
+
+
+        
         private void InitializeComponent() 
         {
-            this.btnCancel = new Terminal.Gui.Button();
-            this.btnSave = new Terminal.Gui.Button();
-            this.tvwNotes = new Terminal.Gui.TextView();
-            this.fraNotes = new Terminal.Gui.FrameView();
-            this.cboMatch = new Terminal.Gui.ComboBox();
-            this.txtURI = new Terminal.Gui.TextField();
-            this.lblMatch = new Terminal.Gui.Label();
-            this.lblURI = new Terminal.Gui.Label();
-            this.txtTOTPKey = new Terminal.Gui.TextField();
-            this.lblTOTPKey = new Terminal.Gui.Label();
-            this.btnCopyPassword = new Terminal.Gui.Button();
-            this.btnViewPassword = new Terminal.Gui.Button();
-            this.txtPassword = new Terminal.Gui.TextField();
-            this.btnCopyUserName = new Terminal.Gui.Button();
+            this.tvwNotes = ViewUtils.CreateControl<TextView>(1, 0, 71, 7, 0, 0,
+                true, true, "", "tvwNotes");
+            this.fraNotes = ViewUtils.CreateControl<FrameView>(5, 13, 75, 8, 0, 0,
+                false, true, "", "fraNotes");
+            this.cboMatch = ViewUtils.CreateControl<ComboBox>(41, 11, 20, 2, 0, 0,
+                true, true, "", "cboMatch");
+            this.txtURI = ViewUtils.CreateControl<TextField>(5, 11, 29, 1, 0, 0,
+                true, true, "", "TxtURI");
+            this.btnCancel = ViewUtils.CreateControl<Button>(45, 22, 10, 1, 0, 0,
+                true, true, "Cancel", "btnCancel", TextAlignment.Centered);
+            this.btnSave = ViewUtils.CreateControl<Button>(30, 22, 8, 1, 0, 0,
+                true, true, "Save", "btnSave", TextAlignment.Centered);
+            this.lblMatch = ViewUtils.CreateControl<Label>(41, 10, 4, 1, 0, 0,
+                false, true, "Match Detection", "lblMatch");
+            this.lblURI = ViewUtils.CreateControl<Label>(5, 10, 4, 1, 0, 0,
+                false, true, "URI", "lblURI");
+            this.txtTOTPKey = ViewUtils.CreateControl<TextField>(5, 8, 29, 1, 0, 0,
+                true, true, "", "txtTOTPKey");
+            this.lblTOTPKey = ViewUtils.CreateControl<Label>(5, 7, 29, 1, 0, 0,
+                false, true, "Authenticator Key (TOTP)", "lblTOTPKey");
+            this.btnCopyPassword = ViewUtils.CreateControl<Button>(71, 5, 9, 1, 0, 0,
+                true, true, "Copy", "btnCopyPassword", TextAlignment.Centered);
+            this.btnViewPassword = ViewUtils.CreateControl<Button>(62, 5, 8, 1, 0, 0,
+                true, true, "View", "btnViewPassword",TextAlignment.Centered);
+            this.txtPassword = ViewUtils.CreateControl<TextField>(41,5,20,1,0,0,
+                true,true,"","txtPassword");
+            this.btnCopyUserName = ViewUtils.CreateControl<Button>(26,5,8,1,0,0,
+                true, true,"Copy", "btnCopyUserName", TextAlignment.Centered);
             this.lblUserName = ViewUtils.CreateControl<Label>(5, 4, 4, 1, 0, 0,
                 false, true, "UserName", "lblUserName");
             this.txtUserName = ViewUtils.CreateControl<TextField>(5, 5, 20, 1, 0, 0,
@@ -76,7 +93,7 @@ namespace Retrowarden.Views
             this.Border.Effect3DBrush = null;
             this.Border.DrawMarginFrame = true;
             this.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.Title = "Create New Item";
+            this.Title = "";
             
             this.Add(this.lblName);
             this.Add(this.lblFolder);
@@ -85,113 +102,28 @@ namespace Retrowarden.Views
             
             this.chkFavorite.Checked = false;
             this.Add(this.chkFavorite);
-            
             this.Add(this.lblUserName);
             this.Add(this.lblPassword);
-            
             this.Add(this.txtUserName);
-            this.btnCopyUserName.Width = 8;
-            this.btnCopyUserName.Height = 1;
-            this.btnCopyUserName.X = 26;
-            this.btnCopyUserName.Y = 5;
-            this.btnCopyUserName.Visible = true;
-            this.btnCopyUserName.Data = "btnCopyUserName";
-            this.btnCopyUserName.Text = "Copy";
-            this.btnCopyUserName.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.btnCopyUserName.IsDefault = false;
+            
+            btnCopyUserName.Clicked += CopyUserNameButtonClicked;
             this.Add(this.btnCopyUserName);
-            this.txtPassword.Width = 20;
-            this.txtPassword.Height = 1;
-            this.txtPassword.X = 41;
-            this.txtPassword.Y = 5;
-            this.txtPassword.Visible = true;
+            
             this.txtPassword.Secret = true;
-            this.txtPassword.Data = "txtPassword";
-            this.txtPassword.Text = "";
-            this.txtPassword.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.txtPassword);
-            this.btnViewPassword.Width = 8;
-            this.btnViewPassword.Height = 1;
-            this.btnViewPassword.X = 62;
-            this.btnViewPassword.Y = 5;
-            this.btnViewPassword.Visible = true;
-            this.btnViewPassword.Data = "btnViewPassword";
-            this.btnViewPassword.Text = "View";
-            this.btnViewPassword.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.btnViewPassword.IsDefault = false;
+            
+            btnViewPassword.Clicked += ViewPasswordButtonClicked;
             this.Add(this.btnViewPassword);
-            this.btnCopyPassword.Width = 9;
-            this.btnCopyPassword.Height = 1;
-            this.btnCopyPassword.X = 71;
-            this.btnCopyPassword.Y = 5;
-            this.btnCopyPassword.Visible = true;
-            this.btnCopyPassword.Data = "btnCopyPassword";
-            this.btnCopyPassword.Text = "Co_py";
-            this.btnCopyPassword.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.btnCopyPassword.IsDefault = false;
+            
+            btnCopyPassword.Clicked += CopyPasswordButtonClicked;
             this.Add(this.btnCopyPassword);
-            this.lblTOTPKey.Width = 29;
-            this.lblTOTPKey.Height = 1;
-            this.lblTOTPKey.X = 5;
-            this.lblTOTPKey.Y = 7;
-            this.lblTOTPKey.Visible = true;
-            this.lblTOTPKey.Data = "lblTOTPKey";
-            this.lblTOTPKey.Text = "Authenticator Key (TOTP)";
-            this.lblTOTPKey.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.lblTOTPKey);
-            this.txtTOTPKey.Width = 29;
-            this.txtTOTPKey.Height = 1;
-            this.txtTOTPKey.X = 5;
-            this.txtTOTPKey.Y = 8;
-            this.txtTOTPKey.Visible = true;
-            this.txtTOTPKey.Secret = false;
-            this.txtTOTPKey.Data = "txtTOTPKey";
-            this.txtTOTPKey.Text = "";
-            this.txtTOTPKey.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.txtTOTPKey);
-            this.lblURI.Width = 4;
-            this.lblURI.Height = 1;
-            this.lblURI.X = 5;
-            this.lblURI.Y = 10;
-            this.lblURI.Visible = true;
-            this.lblURI.Data = "lblURI";
-            this.lblURI.Text = "URI";
-            this.lblURI.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.lblURI);
-            this.lblMatch.Width = 4;
-            this.lblMatch.Height = 1;
-            this.lblMatch.X = 41;
-            this.lblMatch.Y = 10;
-            this.lblMatch.Visible = true;
-            this.lblMatch.Data = "lblMatch";
-            this.lblMatch.Text = "Match Detection";
-            this.lblMatch.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.lblMatch);
-            this.txtURI.Width = 29;
-            this.txtURI.Height = 1;
-            this.txtURI.X = 5;
-            this.txtURI.Y = 11;
-            this.txtURI.Visible = true;
-            this.txtURI.Secret = false;
-            this.txtURI.Data = "txtURI";
-            this.txtURI.Text = "";
-            this.txtURI.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.txtURI);
-            this.cboMatch.Width = 20;
-            this.cboMatch.Height = 2;
-            this.cboMatch.X = 41;
-            this.cboMatch.Y = 11;
-            this.cboMatch.Visible = true;
-            this.cboMatch.Data = "cboMatch";
-            this.cboMatch.Text = "";
-            this.cboMatch.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.cboMatch);
-            this.fraNotes.Width = 75;
-            this.fraNotes.Height = 8;
-            this.fraNotes.X = 5;
-            this.fraNotes.Y = 13;
-            this.fraNotes.Visible = true;
-            this.fraNotes.Data = "fraNotes";
+            
             this.fraNotes.Border.BorderStyle = Terminal.Gui.BorderStyle.Single;
             this.fraNotes.Border.Effect3D = false;
             this.fraNotes.Border.Effect3DBrush = null;
@@ -199,37 +131,16 @@ namespace Retrowarden.Views
             this.fraNotes.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.fraNotes.Title = "Notes";
             this.Add(this.fraNotes);
-            this.tvwNotes.Width = 71;
-            this.tvwNotes.Height = 7;
-            this.tvwNotes.X = 1;
-            this.tvwNotes.Y = 0;
-            this.tvwNotes.Visible = true;
+            
             this.tvwNotes.AllowsTab = true;
             this.tvwNotes.AllowsReturn = true;
-            this.tvwNotes.WordWrap = false;
-            this.tvwNotes.Data = "tvwNotes";
-            this.tvwNotes.Text = "\t\t\t\t\t";
-            this.tvwNotes.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.tvwNotes.WordWrap = true;
             this.fraNotes.Add(this.tvwNotes);
-            this.btnSave.Width = 8;
-            this.btnSave.Height = 1;
-            this.btnSave.X = 30;
-            this.btnSave.Y = 22;
-            this.btnSave.Visible = true;
-            this.btnSave.Data = "btnSave";
-            this.btnSave.Text = "Save";
-            this.btnSave.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.btnSave.IsDefault = false;
+            
+            this.btnSave.Clicked += SaveButtonClicked;
             this.Add(this.btnSave);
-            this.btnCancel.Width = 10;
-            this.btnCancel.Height = 1;
-            this.btnCancel.X = 45;
-            this.btnCancel.Y = 22;
-            this.btnCancel.Visible = true;
-            this.btnCancel.Data = "btnCancel";
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.TextAlignment = Terminal.Gui.TextAlignment.Centered;
-            this.btnCancel.IsDefault = false;
+            
+            btnCancel.Clicked += CancelButton_Clicked;
             this.Add(this.btnCancel);
         }
     }

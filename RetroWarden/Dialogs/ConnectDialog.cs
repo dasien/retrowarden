@@ -59,7 +59,7 @@ namespace Retrowarden.Dialogs
             // Check to see if required values are present.
             if (_userText.Text.TrimSpace().Length == 0 || _passwordText.Text.TrimSpace().Length == 0)
             {
-                MessageBox.ErrorQuery("Values Missing", "Both Server Address and User Handle required.", "Ok");
+                MessageBox.ErrorQuery("Values Missing", "Both User Id and Password are required.", "Ok");
             }
 
             else
