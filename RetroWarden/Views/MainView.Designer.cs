@@ -125,6 +125,10 @@ namespace Retrowarden.Views
                     new MenuItem("_Quit", "Quit Application", HandleQuitRequest, null, 
                         null)
                 }),
+                new MenuBarItem("Options", new MenuItem[]
+                {
+                    new MenuItem("Boomer Mode!","Disable/Enable Mouse Use", HandleBoomerMode,null,null)
+                }),
                 new MenuBarItem ("_Help", new MenuItem [] {
                     new MenuItem ("_About...",
                         "", () =>  MessageBox.Query ("About Retrowarden", _aboutMessage.ToString(), "_Ok"), null, null, Key.CtrlMask | Key.A),

@@ -13,7 +13,7 @@ namespace Retrowarden.Utils
         private bool _cmdExit;
         private String _cmdExitCode;
 
-        public VaultProxy()
+        public VaultProxy(string bwExeLocation)
         {
             // Set defaults.
             _response = "";
@@ -22,7 +22,7 @@ namespace Retrowarden.Utils
 
             // Create exe caller.
             _bwcli = new Process();
-            _bwcli.StartInfo.FileName = Environment.CurrentDirectory + "\\bw-cli\\bw.exe";
+            _bwcli.StartInfo.FileName = bwExeLocation;
 
             // Set call options
             _bwcli.EnableRaisingEvents = true;

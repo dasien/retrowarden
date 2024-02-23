@@ -4,6 +4,7 @@ Update table for multiselect actions (add to folder, move to collection, etc.)
 Error Handling! :)
 Make vault proxy methods async to help UI performance
 Eiter make dialogs standard size and hard code button locations or make button locations dynamic based on dialog size
+Make location of bw.exe configurable
 
 Completed Items
 ========================================================================================================================
