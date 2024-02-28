@@ -133,6 +133,34 @@ namespace Retrowarden.Utils
             // Return list.
             return retVal;
         }
+        
+        public List<Organization> ListOrganizations()
+        {
+            // Return value.
+            List<Organization> retVal = null;
+            
+            // Add parameters for call.
+            _bwcli.StartInfo.ArgumentList.Add("list");
+            _bwcli.StartInfo.ArgumentList.Add("organizations");
+
+            // Execute.
+            ExecuteCommand();
+            
+            // Check to make sure it didn't error out.
+            if (_cmdExitCode == "0")
+            {
+                // Set serialization rules.
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+            
+                // Get item list.
+                retVal = JsonConvert.DeserializeObject<List<Organization>>(_response,settings);
+            }
+            
+            // Return list.
+            return retVal;
+        }
+        
         public SortedDictionary<string, VaultItem> ListVaultItems()
         {
             // Return object.

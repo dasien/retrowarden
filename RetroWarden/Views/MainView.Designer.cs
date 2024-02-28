@@ -10,21 +10,28 @@ namespace Retrowarden.Views
         private Terminal.Gui.FrameView fraItems;
         private Terminal.Gui.TreeView tvwItems;
         private Terminal.Gui.FrameView fraVault;
-        private Terminal.Gui.TableView tabItems;
+        //private Terminal.Gui.TableView tabItems;
+        private Terminal.Gui.ListView lvwItems;
         private Terminal.Gui.MenuBar mnuMain;
         private Terminal.Gui.StatusBar staMain;
         private Terminal.Gui.StatusItem stiHelp;
-        
+        private Terminal.Gui.StatusItem stiView;
+        private Terminal.Gui.StatusItem stiEdit; 
+        private Terminal.Gui.StatusItem stiCopyUser;
+        private Terminal.Gui.StatusItem stiCopyPwd;
+        private Terminal.Gui.StatusItem stiFolderMove; 
+        private Terminal.Gui.StatusItem stiCollectionMove;
+
         private void InitializeComponent() {
             
             // Allocate controls.
             this.staMain = new Terminal.Gui.StatusBar();
             this.mnuMain = new Terminal.Gui.MenuBar();
-            this.tabItems = new Terminal.Gui.TableView();
             this.fraVault = new Terminal.Gui.FrameView();
             this.tvwItems = new Terminal.Gui.TreeView();
             this.fraItems = new Terminal.Gui.FrameView();
             this.winMain = new Terminal.Gui.Window();
+            this.lvwItems = new ListView();
             
             // Top level window settings.
             this.Width = Dim.Fill(0);
@@ -96,25 +103,20 @@ namespace Retrowarden.Views
             this.fraVault.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.fraVault.Title = "All Vaults";
             this.winMain.Add(this.fraVault);
-            
-            this.tabItems.Width = 84;
-            this.tabItems.Height = 26;
-            this.tabItems.X = 0;
-            this.tabItems.Y = 0;
-            this.tabItems.Visible = true;
-            this.tabItems.Data = "tabItems";
-            this.tabItems.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.tabItems.FullRowSelect = true;
-            this.tabItems.MultiSelect = true;
-            this.tabItems.SelectedCellChanged += HandleItemTableSelectedCellChanged;
-            this.tabItems.Style.AlwaysShowHeaders = true;
-            this.tabItems.Style.ExpandLastColumn = true;
-            this.tabItems.Style.InvertSelectedCellFirstCharacter = false;
-            this.tabItems.Style.ShowHorizontalHeaderOverline = false;
-            this.tabItems.Style.ShowHorizontalHeaderUnderline = true;
-            this.tabItems.Style.ShowVerticalCellLines = false;
-            this.tabItems.Style.ShowVerticalHeaderLines = false;
-            this.fraVault.Add(this.tabItems);
+
+            this.lvwItems.Width = 84;
+            this.lvwItems.Height = 26;
+            this.lvwItems.X = 0;
+            this.lvwItems.Y = 0;
+            this.lvwItems.Visible = true;
+            this.lvwItems.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.lvwItems.AllowsMultipleSelection = true;
+            this.lvwItems.AllowsMarking = true;
+            this.lvwItems.SelectedItemChanged += HandleListViewSelectedItemChanged;
+            this.lvwItems.KeyPress += HandleListViewKeyUp;
+            this.lvwItems.OpenSelectedItem += HandleListViewOpenItem;
+            this.lvwItems.Enter += HandleListviewEnter;
+            this.fraVault.Add(lvwItems);
             
             this.mnuMain = new MenuBar(new MenuBarItem[]
             {
@@ -149,11 +151,20 @@ namespace Retrowarden.Views
             this.staMain.Y = Pos.AnchorEnd(1);
             this.staMain.Visible = true;
             this.staMain.Data = "staMain";
-            this.staMain.Text = "s";
+            this.staMain.Text = "";
             this.staMain.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.stiHelp = new Terminal.Gui.StatusItem(((Terminal.Gui.Key)(1048588u)), "F1 - Help", HandleHelpKeypress);
+            this.stiHelp = new Terminal.Gui.StatusItem(((Terminal.Gui.Key)(1048588u)), "~F1~ Help", HandleHelpKeypress);
             this.staMain.Items = new Terminal.Gui.StatusItem[] {
                     this.stiHelp};
+            
+            // Create new status bar items.  These will get added as context functions when items are selected.
+            stiView = new StatusItem(Key.F2, "~F2~ View", HandleViewItemKeypress);
+            stiEdit = new StatusItem(Key.F3, "~F3~ Edit", HandleEditItemKeypress);
+            stiCopyUser = new StatusItem(Key.F4, "~F4~ Copy UserName", HandleUserCopyKeypress);
+            stiCopyPwd = new StatusItem(Key.F5, "~F5~ Copy Password", HandlePwdCopyKeypress);
+            stiFolderMove = new StatusItem(Key.F6, "~F6~ Move To Folder", HandleFolderMoveKeypress);
+            stiCollectionMove = new StatusItem(Key.F7, "~F7~ Move To Collection", HandleCollectionMoveKeypress);
+
             this.Add(this.staMain);
         }
     }

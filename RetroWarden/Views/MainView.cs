@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Data;
 using System.Text;
 using Terminal.Gui;
 using Terminal.Gui.Trees;
@@ -7,6 +5,7 @@ using Retrowarden.Dialogs;
 using Retrowarden.Models;
 using Retrowarden.Utils;
 using Retrowarden.Config;
+using Retrowarden.Workers;
 
 namespace Retrowarden.Views 
 {
@@ -17,10 +16,10 @@ namespace Retrowarden.Views
         private SortedDictionary<string, VaultItem> _vaultItems;
         private List<VaultFolder> _folders;
         private List<VaultCollection> _collections;
+        private List<Organization> _organizations;
+        private List<string> _selectedRows;
         private StringBuilder _aboutMessage;
-        
-        // Used for all long running operation indicators.
-        private BackgroundWorker _worker;
+        private VaultItem _tempItem;
         
         public MainView() 
         {
@@ -28,10 +27,10 @@ namespace Retrowarden.Views
             Application.Init();
             
             // Load the configuration file.
-            ConfigurationManager _manager = ConfigurationManager.Instance;
+            ConfigurationManager manager = ConfigurationManager.Instance;
             
             // Check to see if exe location has been set.
-            if (string.IsNullOrEmpty(_manager.GetConfig().CLILocation))
+            if (string.IsNullOrEmpty(manager.GetConfig().CLILocation))
             {
                 // The allowed list. 
                 List<string> fileType = new List<string>();
@@ -47,11 +46,11 @@ namespace Retrowarden.Views
                 if (!finder.Canceled)
                 {
                     // Check to see if a file was found.
-                    if (finder.FilePath != null)
+                     if (finder.FilePath != null)
                     {
                         // Save exe location in config.
-                        _manager.GetConfig().CLILocation = (string)finder.FilePath;
-                        _manager.WriteConfig(_manager.GetConfig());
+                        manager.GetConfig().CLILocation = (string)finder.FilePath;
+                        manager.WriteConfig(manager.GetConfig());
                     }
 
                     else
@@ -69,7 +68,10 @@ namespace Retrowarden.Views
             }
             
             // Initialize vault proxy.
-            _vaultProxy = new VaultProxy(_manager.GetConfig().CLILocation);
+            _vaultProxy = new VaultProxy(manager.GetConfig().CLILocation);
+            
+            // Initialize selected rows list.
+            _selectedRows = new List<string>();
             
             // Create about message.
             CreateAboutMessageASCII();
@@ -96,42 +98,18 @@ namespace Retrowarden.Views
         }
 
         #region UI Control Helpers
-        private void LoadItemTableView(SortedDictionary<string, VaultItem> items)
-        {
-            // Create data table.
-            DataTable itemTable = new DataTable();
-            
-            // Hide the "Id" column.
-            TableView.ColumnStyle style = new TableView.ColumnStyle();
-            style.Visible = false;
-            DataColumn id = itemTable.Columns.Add("Id");
-            
-            // Add this column to table.
-            this.tabItems.Style.ColumnStyles.Add(id, style);
-            
-            // Add visible columns.
-            itemTable.Columns.Add("Site Name");
-            itemTable.Columns.Add("User Id");
-            
-            // Loop through vault items.
-            foreach (VaultItem item in items.Values)
-            {
-                // Create data row.
-                DataRow row = itemTable.NewRow();
-                
-                // Set column data.
-                row["Id"] = item.Id;
-                row["Site Name"] = item.ItemName;
-                row["User Id"] = item.Login.UserName;
-                
-                // Add row to table view.
-                itemTable.Rows.Add(row);
-            }
-            
-            // Set data source.
-            this.tabItems.Table = itemTable;
-        }
 
+        private void LoadItemListView(SortedDictionary<string, VaultItem> items)
+        {
+            // Get list of vault items from dictionary.
+            List<VaultItem> itemList = items.Values.ToList();
+            
+            // Create list data source for listview.
+            ItemListDataSource listSource = new ItemListDataSource(itemList);
+            
+            // Set the data to the listview.
+            lvwItems.Source = (listSource);
+        }
         private void LoadTreeView()
         {
             // Create root node.
@@ -171,7 +149,7 @@ namespace Retrowarden.Views
                 {
                     // Lookup node in item dictionary.
                     VaultItem item = _vaultItems[nodeData.Item2];
-                
+
                     // Add to filtered list.
                     retVal.Add(item.Id, item);   
                 }
@@ -183,216 +161,95 @@ namespace Retrowarden.Views
 
         private void ShowDetailForm(VaultItemDetailViewState state)
         {
-            // Get the current item from tableview.
-            DataRow selectedRow = tabItems.Table.Rows[tabItems.SelectedRow];
-           
-            // Get the item associated with this row.
-            VaultItem item = _vaultItems[(string)selectedRow["Id"]];
-           
             // Create item detail dialog.
-            VaultItemDetailView detailView = new VaultItemDetailView(item, _folders, state);
-            
+            VaultItemDetailView detailView = new VaultItemDetailView(_tempItem, _folders, state);
+
             // Update title.
             switch (state)
             {
                 case VaultItemDetailViewState.Create:
                     detailView.Title = "Create New Item";
                     break;
-                
+
                 case VaultItemDetailViewState.Edit:
-                    detailView.Title = "Edit Item - " + item.ItemName;
+                    detailView.Title = "Edit Item - " + _tempItem.ItemName;
                     break;
-                
+
                 case VaultItemDetailViewState.View:
-                    detailView.Title = "View Item - " + item.ItemName;
+                    detailView.Title = "View Item - " + _tempItem.ItemName;
                     break;
             }
-            
+
             // Show the view modal.
             detailView.Show();
-
         }
         #endregion
         
         #region Proxy Workers
         private void RunLoginWorker(string userId, string password)
         {
-            // Get background worker.
-            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            // Create new worker.
+            LoginWorker worker = new LoginWorker(_vaultProxy, userId, password);
             
-            // Create working dialog.
-            WorkingDialog _workingDialog = new WorkingDialog("Logging in");
-            
-            // Run the login method.
-            _worker.DoWork += (s, e) => 
-            {
-                // Execute the login method.
-                 _vaultProxy.Login(userId, password);
-            };
-            
-            // Add completion event handler.
-            _worker.RunWorkerCompleted += (s, e) => 
-            {   
-                // Check to see if the dialog is present.
-                if (_workingDialog.IsCurrentTop) 
-                {
-                    //Close the dialog
-                    _workingDialog.Hide();
-                }
-                
-                // Clear out the worker.
-                _worker = null;
-            };
-            
-            // Run the worker.
-            _worker.RunWorkerAsync ();
-            
-            // Show working dialog.
-            _workingDialog.Show();
-        }
+            // Execute task
+            worker.Run();
+       }
         
         private void RunLogoutWorker()
         {
-            // Get background worker.
-            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            // Create new worker.
+            LogoutWorker worker = new LogoutWorker(_vaultProxy);
             
-            // Create working dialog.
-            WorkingDialog _workingDialog = new WorkingDialog("Logging out");
-            
-            // Run the fetch method.
-            _worker.DoWork += (s, e) => 
-            {
-                // Try to logout.
-                _vaultProxy.Logout();
-            };
-
-            // Add completion event handler.
-            _worker.RunWorkerCompleted += (s, e) => 
-            {   
-                // Check to see if the dialog is present.
-                if (_workingDialog.IsCurrentTop) 
-                {
-                    //Close the dialog
-                    _workingDialog.Hide();
-                }
-                
-                // Clear out the worker.
-                _worker = null;
-            };
-            
-            // Run the worker.
-            _worker.RunWorkerAsync ();
-            
-            // Show working dialog.
-            _workingDialog.Show();
+            // Execute task.
+            worker.Run();
         }
         
         private void RunGetItemsWorker()
         {
-            // Get background worker.
-            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            // Create new worker.
+            GetItemsWorker worker = new GetItemsWorker(_vaultProxy);
             
-            // Create working dialog.
-            WorkingDialog _workingDialog = new WorkingDialog("Syncing Vault Items");
+            // Execute task.
+            worker.Run();
             
-            // Run the fetch method.
-            _worker.DoWork += (s, e) => 
-            {
-                // Try to fetch vault items.
-                _vaultItems = _vaultProxy.ListVaultItems();
-            };
-
-            // Add completion event handler.
-            _worker.RunWorkerCompleted += (s, e) => 
-            {   
-                // Check to see if the dialog is present.
-                if (_workingDialog.IsCurrentTop) 
-                {
-                    //Close the dialog
-                    _workingDialog.Hide();
-                }
-                
-                // Clear out the worker.
-                _worker = null;
-            };
-            
-            // Run the worker.
-            _worker.RunWorkerAsync ();
-            
-            // Show working dialog.
-            _workingDialog.Show();
+            // Get vault items.
+            _vaultItems = worker.Items;
         }
         
         private void RunGetFoldersWorker()
         {
-            // Get background worker.
-            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            // Create new worker.
+            GetFoldersWorker worker = new GetFoldersWorker(_vaultProxy);
             
-            // Create working dialog.
-            WorkingDialog _workingDialog = new WorkingDialog("Syncing Folders");
+            // Execute task.
+            worker.Run();
             
-            // Run the fetch method.
-            _worker.DoWork += (s, e) => 
-            {
-                // Get folders.
-                _folders = _vaultProxy.ListFolders();
-            };
-
-            // Add completion event handler.
-            _worker.RunWorkerCompleted += (s, e) => 
-            {   
-                // Check to see if the dialog is present.
-                if (_workingDialog.IsCurrentTop) 
-                {
-                    //Close the dialog
-                    _workingDialog.Hide();
-                }
-                
-                // Clear out the worker.
-                _worker = null;
-            };
-            
-            // Run the worker.
-            _worker.RunWorkerAsync ();
-            
-            // Show working dialog.
-            _workingDialog.Show();
+            // Get folders.
+            _folders = worker.Folders;
         }
         
         private void RunGetCollectionsWorker()
         {
-            // Get background worker.
-            _worker = new BackgroundWorker () { WorkerSupportsCancellation = true };
+            // Create new worker.
+            GetCollectionsWorker worker = new GetCollectionsWorker(_vaultProxy);
             
-            // Create working dialog.
-            WorkingDialog _workingDialog = new WorkingDialog("Syncing Collections");
+            // Execute task.
+            worker.Run();
             
-            // Run the fetch method.
-            _worker.DoWork += (s, e) => 
-            {
-                // Get collections.
-                _collections = _vaultProxy.ListCollections();
-            };
-
-            // Add completion event handler.
-            _worker.RunWorkerCompleted += (s, e) => 
-            {   
-                // Check to see if the dialog is present.
-                if (_workingDialog.IsCurrentTop) 
-                {
-                    //Close the dialog
-                    _workingDialog.Hide();
-                }
-                
-                // Clear out the worker.
-                _worker = null;
-            };
+            // Get collections.
+            _collections = worker.Collections;
+        }
+        
+        private void RunGetOrganizationsWorker()
+        {
+            // Create new worker.
+            GetOrganizationsWorker worker = new GetOrganizationsWorker(_vaultProxy);
             
-            // Run the worker.
-            _worker.RunWorkerAsync ();
+            // Execute task.
+            worker.Run();
             
-            // Show working dialog.
-            _workingDialog.Show();
+            // Get organizations.
+            _organizations = worker.Organizations;
         }
         #endregion
         
@@ -420,9 +277,11 @@ namespace Retrowarden.Views
                         // Run workers for folders and collections.
                         RunGetFoldersWorker();
                         RunGetCollectionsWorker();
-
+                        RunGetOrganizationsWorker();
+                        
+                        // Load controls with data.
                         LoadTreeView();
-                        LoadItemTableView(_vaultItems);
+                        LoadItemListView(_vaultItems);
                     }
                 }
 
@@ -453,7 +312,7 @@ namespace Retrowarden.Views
             }
         }
 
-        private void HandleTreeviewSelectionChanged(object? sender, SelectionChangedEventArgs<ITreeNode> e)
+       private void HandleTreeviewSelectionChanged(object? sender, SelectionChangedEventArgs<ITreeNode> e)
         {
             // Get node that was selected.
             ITreeNode selected = e.NewValue;
@@ -468,7 +327,7 @@ namespace Retrowarden.Views
                 SortedDictionary<string, VaultItem> list = GetVaultItemsForTreeNode(selected);
                 
                 // Update tableview with scoped list.
-                LoadItemTableView(list);
+                LoadItemListView(list);
             }
         }
         
@@ -489,27 +348,27 @@ namespace Retrowarden.Views
         }
         private void HandleUserCopyKeypress()
         {
-            // Get the current item from tableview.
-            DataRow selectedRow = tabItems.Table.Rows[tabItems.SelectedRow];
-           
+            // Get the current item from selected item list.
+            string itemId = _selectedRows[0];
+
             // Get the item associated with this row.
-            VaultItem item = _vaultItems[(string)selectedRow["Id"]];
-            
+            VaultItem item = _vaultItems[itemId];
+
             // Copy user name to clipboard.
             Clipboard.TrySetClipboardData(item.Login.UserName);
-            
+
             // Indicate data copied.
             MessageBox.Query("Action Completed", "Username copied to clipboard.", "Ok");
         }
         
         private void HandlePwdCopyKeypress()
         {
-            // Get the current item from tableview.
-            DataRow selectedRow = tabItems.Table.Rows[tabItems.SelectedRow];
-           
+            // Get the current item from selected item list.
+            string itemId = _selectedRows[0];
+
             // Get the item associated with this row.
-            VaultItem item = _vaultItems[(string)selectedRow["Id"]];
-            
+            VaultItem item = _vaultItems[itemId];
+
             // Copy password to clipboard.
             Clipboard.TrySetClipboardData(item.Login.Password);
 
@@ -517,17 +376,14 @@ namespace Retrowarden.Views
             MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
         }
         
-        private void HandleItemTableSelectedCellChanged(TableView.SelectedCellChangedEventArgs obj)
+        private void HandleCollectionMoveKeypress()
         {
-            // Create new status bar items.
-            StatusItem stiView = new StatusItem(Key.F2, "~F2~ - View Item", HandleViewItemKeypress);
-            StatusItem stiEdit = new StatusItem(Key.F3, "~F3~ - Edit Item", HandleEditItemKeypress);
-            StatusItem stiCopyUser = new StatusItem(Key.F4, "~F4~ - Copy UserName", HandleUserCopyKeypress);
-            StatusItem stiCopyPwd = new StatusItem(Key.F5, "~F5~ - Copy Password", HandlePwdCopyKeypress);
-            
-            // Add them to the status bar.
-            staMain.Items = new StatusItem[] { stiHelp, stiView, stiEdit, stiCopyUser, stiCopyPwd };
-            
+            throw new NotImplementedException();
+        }
+
+        private void HandleFolderMoveKeypress()
+        {
+            throw new NotImplementedException();
         }
         
         private void HandleBoomerMode()
@@ -535,5 +391,67 @@ namespace Retrowarden.Views
             throw new NotImplementedException();
         }
         #endregion
+
+        private void HandleListViewSelectedItemChanged(ListViewItemEventArgs obj)
+        {
+            // Hold a temp reference to current item.
+            _tempItem = (VaultItem)obj.Value;
+        }
+
+        private void HandleListViewKeyUp(KeyEventEventArgs obj)
+        {
+            // Check to see which key was pressed.
+            if (obj.KeyEvent.Key == Key.Space)
+            {
+                // Check to see if it is in the list of selected items.
+                if (_selectedRows.Contains(_tempItem.Id))
+                {
+                    // Remove it (the user has unselected the row).  
+                    _selectedRows.Remove(_tempItem.Id);
+                }
+
+                else
+                {
+                    // If not there, add it.
+                    _selectedRows.Add(_tempItem.Id);    
+                }
+            
+                // Check to see how many rows have been selected.
+                switch (_selectedRows.Count)
+                {
+                    // If 0, disable menu items.
+                    case 0:
+                        // Add them to the status bar.
+                        staMain.Items = [stiHelp];
+                        break;
+                
+                    // If 1, enable menu items.
+                    case 1:
+                        // Add them to the status bar.
+                        staMain.Items = [stiHelp, stiView, stiEdit, stiCopyUser, stiCopyPwd, stiFolderMove, stiCollectionMove];
+                        break;
+                
+                    // If > 1, enable only bulk menu items (add to folder).
+                    default:
+                        // Add them to the status bar.
+                        staMain.Items = [stiHelp, stiFolderMove, stiCollectionMove];
+                        break;
+                }        
+                
+                // Redraw menu bar.
+                staMain.SetNeedsDisplay();
+            }
+        }
+
+        private void HandleListViewOpenItem(ListViewItemEventArgs obj)
+        {
+            ShowDetailForm(VaultItemDetailViewState.Edit);
+        }
+
+        private void HandleListviewEnter(FocusEventArgs obj)
+        {
+            // Set the first row as the selected row.
+            lvwItems.SelectedItem = 0;
+        }
     }
 }

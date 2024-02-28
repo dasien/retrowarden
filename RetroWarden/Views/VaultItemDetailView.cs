@@ -1,4 +1,3 @@
-using System.Collections;
 using Terminal.Gui;
 using Retrowarden.Models;
 
@@ -51,14 +50,13 @@ namespace Retrowarden.Views
                 txtName.Text = _item.ItemName;
                 txtUserName.Text = _item.Login.UserName;
                 txtPassword.Text = _item.Login.Password;
+                tvwNotes.Text = _item.Notes == null ? "" : _item.Notes;
                 
                 // Check to make sure there is a URL.
                 if (_item.Login.URLs != null)
                 {
                     txtURI.Text = _item.Login.URLs[1].URI;
                 }
-                
-                tvwNotes.Text = _item.Notes == null ? "" : _item.Notes;
             }
             
             // If we are in view only mode, need to disable input controls.
@@ -72,6 +70,7 @@ namespace Retrowarden.Views
                 cboFolder.Enabled = false;
                 cboMatch.Enabled = false;
                 chkFavorite.Enabled = false;
+                btnSave.Enabled = false;
             }
         }
         
@@ -88,6 +87,26 @@ namespace Retrowarden.Views
 
         private void SaveButtonClicked()
         {
+            // Check to see if anything actually changed.
+            _item.IsDirty =
+                (txtName.Text != _item.ItemName ||
+                 txtUserName.Text != _item.Login.UserName ||
+                 txtPassword.Text != _item.Login.Password);
+            
+            // Set values from controls to object.
+            if (_item.IsDirty)
+            {
+                // Check to see which save mode we are in.
+                switch (_viewState)
+                {
+                    case VaultItemDetailViewState.Create:
+                        break;
+                    
+                    case VaultItemDetailViewState.Edit:
+                        break;
+                }
+            }
+            
             throw new NotImplementedException();
         }
 

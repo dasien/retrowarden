@@ -51,7 +51,7 @@ namespace Retrowarden.Views
             this.lblMatch = ViewUtils.CreateControl<Label>(41, 10, 4, 1, 0, 0,
                 false, true, "Match Detection", "lblMatch");
             this.lblURI = ViewUtils.CreateControl<Label>(5, 10, 4, 1, 0, 0,
-                false, true, "URI", "lblURI");
+                false, true, "URI List", "lblURI");
             this.txtTOTPKey = ViewUtils.CreateControl<TextField>(5, 8, 29, 1, 0, 0,
                 true, true, "", "txtTOTPKey");
             this.lblTOTPKey = ViewUtils.CreateControl<Label>(5, 7, 29, 1, 0, 0,
