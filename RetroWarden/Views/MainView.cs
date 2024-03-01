@@ -182,6 +182,26 @@ namespace Retrowarden.Views
 
             // Show the view modal.
             detailView.Show();
+            
+            // Check to see if there is anything to do.
+            if (detailView.OkPressed && detailView.Item.IsDirty)
+            {
+                // Create list to hold item.
+                List<VaultItem> items = new List<VaultItem> {detailView.Item};
+
+                switch (state)
+                {
+                    case VaultItemDetailViewState.Create:
+                        // Run the save worker.
+                        RunSaveItemWorker(items, VaultItemSaveAction.Create, "Creating new vault item.");
+                        break;
+                    
+                    case VaultItemDetailViewState.Edit:
+                        // Run the save worker.
+                        RunSaveItemWorker(items, VaultItemSaveAction.Update, "Updating vault item.");
+                        break;
+                }
+            }
         }
         #endregion
         
@@ -250,6 +270,47 @@ namespace Retrowarden.Views
             
             // Get organizations.
             _organizations = worker.Organizations;
+        }
+
+        private void RunSaveItemWorker(List<VaultItem>items , VaultItemSaveAction saveType, string dialogMessage)
+        {
+            SaveItemWorker worker = new SaveItemWorker(_vaultProxy, saveType, items, dialogMessage);
+            
+            // Run the worker.
+            worker.Run();
+            
+            // Check the save type.
+            switch (saveType)
+            {
+                case VaultItemSaveAction.Create:
+                
+                    // For create, put new item in item list.
+                    _vaultItems.Add(worker.Results[0].Id, worker.Results[0]);
+                    break;
+                
+                case VaultItemSaveAction.Update:
+                        
+                    // For update, loop through items to replace existing items in list.
+                    foreach (VaultItem item in worker.Results)
+                    {
+                        // Replace existing item.
+                        _vaultItems[item.Id] = item;
+                    }
+                    break;
+                
+                case VaultItemSaveAction.Delete:
+                    
+                    // For delete, remove item from list.
+                    _vaultItems.Remove(worker.Results[0].Id);
+                    break;
+            } 
+            
+            // Update controls with new source data.
+            ITreeNode node = this.tvwItems.SelectedObject;
+            
+            LoadTreeView();
+            LoadItemListView(_vaultItems);
+            this.tvwItems.SelectedObject = node;
         }
         #endregion
         
@@ -383,7 +444,37 @@ namespace Retrowarden.Views
 
         private void HandleFolderMoveKeypress()
         {
-            throw new NotImplementedException();
+            // Create folder list dialog
+            SelectFolderDialog sfDialog = new SelectFolderDialog(_folders);
+            sfDialog.Show();
+
+            if (sfDialog.OkPressed)
+            {
+                // List to hold items to be saved.
+                List<VaultItem> items = new List<VaultItem>();
+                
+                // Get folder.
+                VaultFolder folder = _folders[sfDialog.SelectedFolderIndex];
+                
+                // Loop through ticked items in list.
+                foreach (string id in _selectedRows)
+                {
+                    // Get item reference.
+                    VaultItem item = _vaultItems[id];
+                    
+                    // Update each selected item in list with this folder.
+                    item.FolderId = folder.Id;
+                    
+                    // Stage item to be saved.
+                    items.Add(item);
+                } 
+                
+                // Save all items.
+                
+                // Redraw the current listview (because things may have moved).
+                
+                // Uncheck current selected rows.
+            }
         }
         
         private void HandleBoomerMode()

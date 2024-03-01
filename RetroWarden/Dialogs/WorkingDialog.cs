@@ -9,6 +9,7 @@ namespace Retrowarden.Dialogs
         private Dialog _dialog;
         private Label _animation;
         private Label _message;
+        private Label _progress;
         private int _animationIndex = 0;
         private object _timerToken;
         
@@ -30,9 +31,12 @@ namespace Retrowarden.Dialogs
             
             _message = ViewUtils.CreateControl<Label>(13,2,10,1, 0, 0, 
                 false, true, message, "lblMessage");
+
+            _progress = ViewUtils.CreateControl<Label>(13, 3, 10, 1, 0, 0,
+                false, true, "", "lblProgress");
             
             // Add controls to view.
-            _dialog.Add(_animation, _message);
+            _dialog.Add(_animation, _message, _progress);
         }
 
         public void Show()
@@ -47,6 +51,13 @@ namespace Retrowarden.Dialogs
             Application.RequestStop(_dialog);
         }
 
+        public string ProgressMessage
+        {
+            set
+            {
+                _progress.Text = value;
+            }
+        }
         public bool IsCurrentTop
         {
             get
@@ -54,6 +65,7 @@ namespace Retrowarden.Dialogs
                 return _dialog.IsCurrentTop;
             }
         }
+        
         private bool UpdateAnimationLabel(MainLoop arg)
         {
             // Get index of animation control.

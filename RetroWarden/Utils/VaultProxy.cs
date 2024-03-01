@@ -191,6 +191,74 @@ namespace Retrowarden.Utils
             // Return it.
             return retVal;
         }
+
+        public VaultItem CreateVaultItem(string encodedItem)
+        {
+            // The return value.
+            VaultItem retVal = null;
+            
+            // Add parameters for call.
+            _bwcli.StartInfo.ArgumentList.Add("create");
+            _bwcli.StartInfo.ArgumentList.Add("item");
+            _bwcli.StartInfo.ArgumentList.Add(encodedItem);
+
+            // Execute.
+            ExecuteCommand();
+    
+            // Check to make sure it didn't error out.
+            if (_cmdExitCode == "0")
+            {
+                // Set serialization rules.
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+
+                // Get item list.
+                retVal = JsonConvert.DeserializeObject<VaultItem>(_response, settings);
+            }
+            
+            // Return saved object.
+            return retVal;
+        }
+
+        public VaultItem UpdateVaultItem(string encodedItem)
+        {
+            // The return value.
+            VaultItem retVal = null;
+            
+            // Add parameters for call.
+            _bwcli.StartInfo.ArgumentList.Add("edit");
+            _bwcli.StartInfo.ArgumentList.Add("item");
+            _bwcli.StartInfo.ArgumentList.Add(encodedItem);
+
+            // Execute.
+            ExecuteCommand();
+    
+            // Check to make sure it didn't error out.
+            if (_cmdExitCode == "0")
+            {
+                // Set serialization rules.
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+
+                // Get item list.
+                retVal = JsonConvert.DeserializeObject<VaultItem>(_response, settings);
+            }
+            
+            // Return saved object.
+            return retVal;
+        }
+
+        public void DeleteVaultItem(string itemId)
+        {
+            // Add parameters for call.
+            _bwcli.StartInfo.ArgumentList.Add("delete");
+            _bwcli.StartInfo.ArgumentList.Add("item");
+            _bwcli.StartInfo.ArgumentList.Add(itemId);
+
+            // Execute.
+            ExecuteCommand();
+    
+        }
         
         private void ExecuteCommand()
         {

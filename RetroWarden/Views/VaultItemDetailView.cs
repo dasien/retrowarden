@@ -8,13 +8,14 @@ namespace Retrowarden.Views
         private VaultItem _item;
         private List<VaultFolder> _folders;
         private VaultItemDetailViewState _viewState;
-        
+        private bool _okPressed;
         public VaultItemDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
         {
             // Set private variables.
             _item = item;
             _viewState = state;
             _folders = folders;
+            _okPressed = false;
             
             InitializeComponent();
             
@@ -79,6 +80,16 @@ namespace Retrowarden.Views
             Application.Run(this);
         }
         
+        public bool OkPressed
+        {
+            get { return _okPressed; }
+        }
+
+        public VaultItem Item
+        {
+            get { return _item; }
+        }
+        
         private void CancelButton_Clicked()
         {
             // Close dialog.
@@ -107,7 +118,8 @@ namespace Retrowarden.Views
                 }
             }
             
-            throw new NotImplementedException();
+            // Flag that the save button was pressed.
+            _okPressed = true;
         }
 
         private void CopyPasswordButtonClicked()
