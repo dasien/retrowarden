@@ -12,12 +12,12 @@ namespace Retrowarden.Views
     public partial class MainView 
     {
         // Vault proxy reference.
-        private VaultProxy _vaultProxy;
+        private readonly VaultProxy _vaultProxy;
         private SortedDictionary<string, VaultItem> _vaultItems;
         private List<VaultFolder> _folders;
         private List<VaultCollection> _collections;
         private List<Organization> _organizations;
-        private List<string> _selectedRows;
+        private readonly List<string> _selectedRows;
         private StringBuilder _aboutMessage;
         private VaultItem _tempItem;
         
@@ -98,7 +98,6 @@ namespace Retrowarden.Views
         }
 
         #region UI Control Helpers
-
         private void LoadItemListView(SortedDictionary<string, VaultItem> items)
         {
             // Get list of vault items from dictionary.
@@ -109,6 +108,11 @@ namespace Retrowarden.Views
             
             // Set the data to the listview.
             lvwItems.Source = (listSource);
+            
+            // Enable visibility of column header labels.
+            lblItemName.Visible = true;
+            lblUserId.Visible = true;
+            lblOwner.Visible = true;
         }
         private void LoadTreeView()
         {
@@ -159,6 +163,25 @@ namespace Retrowarden.Views
             return retVal;
         }
 
+        private void SetOwnerNameForItems()
+        {
+            // Loop through organizations.
+            foreach (Organization org in _organizations)
+            {   
+                // Find each item that belongs to that org.
+                var orgItems = _vaultItems.Values.Where(i => i.OrganizationId == org.Id).ToList();
+                
+                // Update the owner name.
+                orgItems.ForEach(i => i.ItemOwnerName = org.Name);
+            }
+            
+            // Find items with no org.
+            var userItems = _vaultItems.Values.Where(i => i.OrganizationId == null).ToList();
+            
+            // Update to show user is the owner.
+            userItems.ForEach(i => i.ItemOwnerName = "Me");
+        }
+        
         private void ShowDetailForm(VaultItemDetailViewState state)
         {
             // Create item detail dialog.
@@ -339,6 +362,9 @@ namespace Retrowarden.Views
                         RunGetFoldersWorker();
                         RunGetCollectionsWorker();
                         RunGetOrganizationsWorker();
+                        
+                        // Set item owner name.
+                        SetOwnerNameForItems();
                         
                         // Load controls with data.
                         LoadTreeView();

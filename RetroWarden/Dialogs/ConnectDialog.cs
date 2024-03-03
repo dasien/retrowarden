@@ -6,9 +6,9 @@ namespace Retrowarden.Dialogs
     public class ConnectDialog
     {
         // Controls.
-        private Dialog _dialog;
-        private TextField _userText;
-        private TextField _passwordText;
+        private readonly Dialog _dialog;
+        private readonly TextField _userText;
+        private readonly TextField _passwordText;
 
         // Other values.
         private String _userId = "";

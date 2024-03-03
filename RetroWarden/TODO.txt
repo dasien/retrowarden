@@ -1,3 +1,4 @@
+Add listview 'column headers' as labels on main view
 Decide on whether or not to make table view more like Windows Explorer (show folders and collections as well as items based on treeview selection)
 Update table for multiselect actions (add to folder, move to collection, etc.)
 Error Handling! :)

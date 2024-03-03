@@ -7,7 +7,8 @@ namespace Retrowarden.Utils
     public class ItemListDataSource : IListDataSource
     {
         // Member variables.
-        int _nameColumnWidth = 30;
+        readonly int _nameColumnWidth = 30;
+        private readonly int _userIdColumnWidth = 30;
         private int _count;
         private int _maxLength;
         private List<VaultItem> _items;
@@ -24,9 +25,10 @@ namespace Retrowarden.Utils
         {
             container.Move (col, line);
             
-            string s = String.Format (String.Format ("{{0,{0}}}", -_nameColumnWidth), _items [item].ItemName);
+            string itemName = String.Format (String.Format ("{{0,{0}}}", -_nameColumnWidth), _items [item].ItemName);
+            string userId = String.Format (String.Format ("{{0,{0}}}", -_userIdColumnWidth), _items [item].Login.UserName);
             
-            RenderUstr (driver, $"{s} ({_items[item].Login.UserName})", col, line, width, start);        }
+            RenderUstr (driver, $"{itemName} {userId} {_items[item].ItemOwnerName}", col, line, width, start);}
         
         public bool IsMarked(int item)
         {
@@ -61,8 +63,10 @@ namespace Retrowarden.Utils
             {
                 for (int cnt = 0; cnt < _items.Count; cnt++)
                 {
-                    var s = String.Format(String.Format("{{0,{0}}}", -_nameColumnWidth), _items[cnt].ItemName);
-                    var sc = $"{s}  {_items[cnt].Login.UserName}";
+                    var col1 = String.Format(String.Format("{{0,{0}}}", -_nameColumnWidth), _items[cnt].ItemName);
+                    var col2 = String.Format(String.Format("{{0,{0}}}", -_userIdColumnWidth), _items[cnt].Login.UserName);
+
+                    var sc = $"{col1}  {col2} {_items[cnt].ItemOwnerName}";
                     var l = sc.Length;
                     if (l > retVal)
                     {
@@ -74,7 +78,6 @@ namespace Retrowarden.Utils
             return retVal;
         }
 
-        // A slightly adapted method from: https://github.com/gui-cs/Terminal.Gui/blob/fc1faba7452ccbdf49028ac49f0c9f0f42bbae91/Terminal.Gui/Views/ListView.cs#L433-L461
         private void RenderUstr (ConsoleDriver driver, ustring ustr, int col, int line, int width, int start = 0)
         {
             int used = 0;

@@ -1,4 +1,5 @@
 using System;
+using System.Xml;
 using Terminal.Gui;
 using Retrowarden.Utils;
 
@@ -10,7 +11,9 @@ namespace Retrowarden.Views
         private Terminal.Gui.FrameView fraItems;
         private Terminal.Gui.TreeView tvwItems;
         private Terminal.Gui.FrameView fraVault;
-        //private Terminal.Gui.TableView tabItems;
+        private Terminal.Gui.Label lblItemName;
+        private Terminal.Gui.Label lblUserId;
+        private Terminal.Gui.Label lblOwner;
         private Terminal.Gui.ListView lvwItems;
         private Terminal.Gui.MenuBar mnuMain;
         private Terminal.Gui.StatusBar staMain;
@@ -25,6 +28,9 @@ namespace Retrowarden.Views
         private void InitializeComponent() {
             
             // Allocate controls.
+            this.lblItemName = new Terminal.Gui.Label();
+            this.lblUserId = new Terminal.Gui.Label();
+            this.lblOwner = new Terminal.Gui.Label();
             this.staMain = new Terminal.Gui.StatusBar();
             this.mnuMain = new Terminal.Gui.MenuBar();
             this.fraVault = new Terminal.Gui.FrameView();
@@ -104,10 +110,37 @@ namespace Retrowarden.Views
             this.fraVault.Title = "All Vaults";
             this.winMain.Add(this.fraVault);
 
+            this.lblItemName.X = 0;
+            this.lblItemName.Y = 0;
+            this.lblItemName.Width = 30;
+            this.lblItemName.Height = 1;
+            this.lblItemName.Enabled = true;
+            this.lblItemName.Visible = false;
+            this.lblItemName.Text = "Item Name";
+            this.fraVault.Add(lblItemName);
+            
+            this.lblUserId.X = 33;
+            this.lblUserId.Y = 0;
+            this.lblUserId.Width = 30;
+            this.lblUserId.Height = 1;
+            this.lblUserId.Enabled = true;
+            this.lblUserId.Visible = false;
+            this.lblUserId.Text = "User Id";
+            this.fraVault.Add(lblUserId);
+            
+            this.lblOwner.X = 64;
+            this.lblOwner.Y = 0;
+            this.lblOwner.Width = 20;
+            this.lblOwner.Height = 1;
+            this.lblOwner.Enabled = true;
+            this.lblOwner.Visible = false;
+            this.lblOwner.Text = "Owner";
+            this.fraVault.Add(lblOwner);
+            
             this.lvwItems.Width = 84;
-            this.lvwItems.Height = 26;
+            this.lvwItems.Height = 25;
             this.lvwItems.X = 0;
-            this.lvwItems.Y = 0;
+            this.lvwItems.Y = 1;
             this.lvwItems.Visible = true;
             this.lvwItems.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.lvwItems.AllowsMultipleSelection = true;

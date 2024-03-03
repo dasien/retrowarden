@@ -6,16 +6,16 @@ namespace Retrowarden.Dialogs
     public class WorkingDialog
     {
         // Controls.
-        private Dialog _dialog;
-        private Label _animation;
-        private Label _message;
-        private Label _progress;
+        private readonly Dialog _dialog;
+        private readonly Label _animation;
+        private readonly Label _message;
+        private readonly Label _progress;
         private int _animationIndex = 0;
         private object _timerToken;
         
         // Other values.
         private bool _okPressed = false;
-        private string[] _spinner = [
+        private readonly string[] _spinner = [
             "01100010", "01101001", "01110100", "01110111", "01100001", "01110010", "01100100", "01100101",
             "01101110"
         ];

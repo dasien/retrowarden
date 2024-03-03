@@ -1,12 +1,11 @@
 using Retrowarden.Utils;
 using Retrowarden.Models;
-using Newtonsoft.Json;
 
 namespace Retrowarden.Workers
 {
     public class SaveItemWorker : RetrowardenWorker
     {
-        private List<VaultItem> _items;
+        private readonly List<VaultItem> _items;
         private List<VaultItem> _results;
         
         public SaveItemWorker(VaultProxy proxy, VaultItemSaveAction action, List<VaultItem> items, string message) 

@@ -5,9 +5,9 @@ namespace Retrowarden.Views
 {
     public partial class VaultItemDetailView
     {
-        private VaultItem _item;
-        private List<VaultFolder> _folders;
-        private VaultItemDetailViewState _viewState;
+        private readonly VaultItem _item;
+        private readonly List<VaultFolder> _folders;
+        private readonly VaultItemDetailViewState _viewState;
         private bool _okPressed;
         public VaultItemDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
         {

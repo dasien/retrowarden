@@ -55,8 +55,12 @@ namespace Retrowarden.Models
         [JsonProperty("collectionIds")]
         public List<string> CollectionIds { get; set; }
         
+        // Helper properties.
         [JsonIgnore]
         public bool IsDirty { get; set; }
+        
+        [JsonIgnore]
+        public string ItemOwnerName { get; set; }
     }
     
 }

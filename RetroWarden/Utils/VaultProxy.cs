@@ -6,7 +6,7 @@ namespace Retrowarden.Utils
 {
     public sealed class VaultProxy
     {
-        private Process _bwcli;
+        private readonly Process _bwcli;
         private String _response;
         private String _error;
         private String _sessionKey;

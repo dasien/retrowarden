@@ -7,8 +7,8 @@ namespace Retrowarden.Dialogs
     public class SelectFolderDialog
     {
         // Controls.
-        private Dialog _dialog;
-        private ComboBox _cboFolder;
+        private readonly Dialog _dialog;
+        private readonly ComboBox _cboFolder;
         private int _folderIndex;
         
         // Other values.
