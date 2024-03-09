@@ -26,7 +26,8 @@ namespace Retrowarden.Utils
             container.Move (col, line);
             
             string itemName = String.Format (String.Format ("{{0,{0}}}", -_nameColumnWidth), _items [item].ItemName);
-            string userId = String.Format (String.Format ("{{0,{0}}}", -_userIdColumnWidth), _items [item].Login.UserName);
+            string userId = String.Format (String.Format ("{{0,{0}}}", -_userIdColumnWidth), 
+                _items[item].Login == null ? " " : _items[item].Login.UserName);
             
             RenderUstr (driver, $"{itemName} {userId} {_items[item].ItemOwnerName}", col, line, width, start);}
         
@@ -64,7 +65,8 @@ namespace Retrowarden.Utils
                 for (int cnt = 0; cnt < _items.Count; cnt++)
                 {
                     var col1 = String.Format(String.Format("{{0,{0}}}", -_nameColumnWidth), _items[cnt].ItemName);
-                    var col2 = String.Format(String.Format("{{0,{0}}}", -_userIdColumnWidth), _items[cnt].Login.UserName);
+                    var col2 = String.Format(String.Format("{{0,{0}}}", -_userIdColumnWidth), 
+                        _items[cnt].Login == null ? " " : _items[cnt].Login.UserName);
 
                     var sc = $"{col1}  {col2} {_items[cnt].ItemOwnerName}";
                     var l = sc.Length;

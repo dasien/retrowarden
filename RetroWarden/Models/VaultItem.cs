@@ -57,9 +57,6 @@ namespace Retrowarden.Models
         
         // Helper properties.
         [JsonIgnore]
-        public bool IsDirty { get; set; }
-        
-        [JsonIgnore]
         public string ItemOwnerName { get; set; }
     }
     

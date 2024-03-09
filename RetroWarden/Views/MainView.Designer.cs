@@ -149,6 +149,7 @@ namespace Retrowarden.Views
             this.lvwItems.KeyPress += HandleListViewKeyUp;
             this.lvwItems.OpenSelectedItem += HandleListViewOpenItem;
             this.lvwItems.Enter += HandleListviewEnter;
+            //this.lvwItems.MouseClick += HandleListviewMouseClick;
             this.fraVault.Add(lvwItems);
             
             this.mnuMain = new MenuBar(new MenuBarItem[]
@@ -186,7 +187,7 @@ namespace Retrowarden.Views
             this.staMain.Data = "staMain";
             this.staMain.Text = "";
             this.staMain.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.stiHelp = new Terminal.Gui.StatusItem(((Terminal.Gui.Key)(1048588u)), "~F1~ Help", HandleHelpKeypress);
+            this.stiHelp = new Terminal.Gui.StatusItem(((Terminal.Gui.Key)(1048588u)), "~F1~ New", HandleCreateKeypress);
             this.staMain.Items = new Terminal.Gui.StatusItem[] {
                     this.stiHelp};
             

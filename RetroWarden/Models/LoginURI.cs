@@ -6,9 +6,9 @@ namespace Retrowarden.Models
     public class LoginURI
     {
         [JsonProperty("uri")]
-        public string URI { get; set; }    
+        public string? URI { get; set; }    
         
         [JsonProperty("match")]
-        public string Match { get; set; }    
+        public int? Match { get; set; }    
     }
 }

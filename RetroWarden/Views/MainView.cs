@@ -26,6 +26,9 @@ namespace Retrowarden.Views
             // Initialize Application Stack
             Application.Init();
             
+            // Create about message.
+            CreateAboutMessageASCII();
+            
             // Load the configuration file.
             ConfigurationManager manager = ConfigurationManager.Instance;
             
@@ -73,11 +76,12 @@ namespace Retrowarden.Views
             // Initialize selected rows list.
             _selectedRows = new List<string>();
             
-            // Create about message.
-            CreateAboutMessageASCII();
-            
             // Setup screen controls.
             InitializeComponent();
+
+            // Show splash screen.
+            SplashDialog splash = new SplashDialog(_aboutMessage.ToString());
+            splash.Show();
 
             // Run the application loop.
             Application.Run(this);
@@ -418,11 +422,6 @@ namespace Retrowarden.Views
             }
         }
         
-        private void HandleHelpKeypress()
-        {
-            Console.WriteLine("Help Fired");
-        }
-
         private void HandleViewItemKeypress()
         {
             // Call helper method.
@@ -569,6 +568,16 @@ namespace Retrowarden.Views
         {
             // Set the first row as the selected row.
             lvwItems.SelectedItem = 0;
+        }
+
+        private void HandleCreateKeypress()
+        {
+            ShowDetailForm(VaultItemDetailViewState.Create);
+        }
+
+        private void HandleListviewMouseClick(MouseEventArgs obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }
