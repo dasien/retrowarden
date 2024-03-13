@@ -1,0 +1,497 @@
+using System;
+using Terminal.Gui;
+
+namespace Retrowarden.Views 
+{
+    public partial class IdentityDetailView : ItemDetailView
+    {
+        private Terminal.Gui.View vwIdentity;
+        private Terminal.Gui.Label lblTitle;
+        private Terminal.Gui.ComboBox cboTitle;
+        private Terminal.Gui.Label lblFirstName;
+        private Terminal.Gui.Label lblMiddleName;
+        private Terminal.Gui.Label lblLastName;
+        private Terminal.Gui.TextField txtFirstName;
+        private Terminal.Gui.TextField txtMiddleName;
+        private Terminal.Gui.TextField txtLastName;
+        private Terminal.Gui.Label lblSSN;
+        private Terminal.Gui.Label lblPassportNumber;
+        private Terminal.Gui.Label lblLicenseNumber;
+        private Terminal.Gui.TextField txtSSN;
+        private Terminal.Gui.TextField txtPassportNumber;
+        private Terminal.Gui.TextField txtLicenseNumber;
+        private Terminal.Gui.LineView lineView2;
+        private Terminal.Gui.LineView lineView;
+        private Terminal.Gui.Label lblAddress1;
+        private Terminal.Gui.Label lblUserName;
+        private Terminal.Gui.TextField txtAddress1;
+        private Terminal.Gui.TextField txtUserName;
+        private Terminal.Gui.Label lblAddress2;
+        private Terminal.Gui.Label lblCompany;
+        private Terminal.Gui.TextField txtAddress2;
+        private Terminal.Gui.TextField txtCompany;
+        private Terminal.Gui.Label lblAddress3;
+        private Terminal.Gui.Label lblEmail;
+        private Terminal.Gui.TextField txtAddress3;
+        private Terminal.Gui.TextField txtEmailAddress;
+        private Terminal.Gui.Label lblCity;
+        private Terminal.Gui.Label lblState;
+        private Terminal.Gui.Label lblPhone;
+        private Terminal.Gui.TextField txtCity;
+        private Terminal.Gui.TextField txtState;
+        private Terminal.Gui.TextField txtPhoneNumber;
+        private Terminal.Gui.Label lblZipCode;
+        private Terminal.Gui.Label lblCountry;
+        private Terminal.Gui.TextField txtZipCode;
+        private Terminal.Gui.TextField txtCountry;
+        
+        private void InitializeComponent()
+        {
+            this.vwIdentity = new View();
+            this.txtCountry = new Terminal.Gui.TextField();
+            this.txtZipCode = new Terminal.Gui.TextField();
+            this.lblCountry = new Terminal.Gui.Label();
+            this.lblZipCode = new Terminal.Gui.Label();
+            this.txtPhoneNumber = new Terminal.Gui.TextField();
+            this.txtState = new Terminal.Gui.TextField();
+            this.txtCity = new Terminal.Gui.TextField();
+            this.lblPhone = new Terminal.Gui.Label();
+            this.lblState = new Terminal.Gui.Label();
+            this.lblCity = new Terminal.Gui.Label();
+            this.txtEmailAddress = new Terminal.Gui.TextField();
+            this.txtAddress3 = new Terminal.Gui.TextField();
+            this.lblEmail = new Terminal.Gui.Label();
+            this.lblAddress3 = new Terminal.Gui.Label();
+            this.txtCompany = new Terminal.Gui.TextField();
+            this.txtAddress2 = new Terminal.Gui.TextField();
+            this.lblCompany = new Terminal.Gui.Label();
+            this.lblAddress2 = new Terminal.Gui.Label();
+            this.txtUserName = new Terminal.Gui.TextField();
+            this.txtAddress1 = new Terminal.Gui.TextField();
+            this.lblUserName = new Terminal.Gui.Label();
+            this.lblAddress1 = new Terminal.Gui.Label();
+            this.lineView = new Terminal.Gui.LineView();
+            this.lineView2 = new Terminal.Gui.LineView();
+            this.txtLicenseNumber = new Terminal.Gui.TextField();
+            this.txtPassportNumber = new Terminal.Gui.TextField();
+            this.txtSSN = new Terminal.Gui.TextField();
+            this.lblLicenseNumber = new Terminal.Gui.Label();
+            this.lblPassportNumber = new Terminal.Gui.Label();
+            this.lblSSN = new Terminal.Gui.Label();
+            this.txtLastName = new Terminal.Gui.TextField();
+            this.txtMiddleName = new Terminal.Gui.TextField();
+            this.txtFirstName = new Terminal.Gui.TextField();
+            this.lblLastName = new Terminal.Gui.Label();
+            this.lblMiddleName = new Terminal.Gui.Label();
+            this.lblFirstName = new Terminal.Gui.Label();
+            this.cboTitle = new Terminal.Gui.ComboBox();
+            this.lblTitle = new Terminal.Gui.Label();
+            
+            vwIdentity.Width = 99;
+            vwIdentity.Height = 25;
+            vwIdentity.X = 0;
+            vwIdentity.Y = 3;
+            vwIdentity.Visible = true;
+            vwIdentity.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            
+            this.lblTitle.Width = 3;
+            this.lblTitle.Height = 1;
+            this.lblTitle.X = 1;
+            this.lblTitle.Y = 0;
+            this.lblTitle.Visible = true;
+            this.lblTitle.Data = "lblTitle";
+            this.lblTitle.Text = "Title";
+            this.lblTitle.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblTitle);
+            
+            this.cboTitle.Width = 23;
+            this.cboTitle.Height = 1;
+            this.cboTitle.X = 1;
+            this.cboTitle.Y = 1;
+            this.cboTitle.Visible = true;
+            this.cboTitle.Data = "cboTitle";
+            this.cboTitle.Text = "";
+            this.cboTitle.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.cboTitle);
+            
+            this.lblFirstName.Width = 4;
+            this.lblFirstName.Height = 1;
+            this.lblFirstName.X = 1;
+            this.lblFirstName.Y = 3;
+            this.lblFirstName.Visible = true;
+            this.lblFirstName.Data = "lblFirstName";
+            this.lblFirstName.Text = "First Name";
+            this.lblFirstName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblFirstName);
+            
+            this.lblMiddleName.Width = 4;
+            this.lblMiddleName.Height = 1;
+            this.lblMiddleName.X = 33;
+            this.lblMiddleName.Y = 3;
+            this.lblMiddleName.Visible = true;
+            this.lblMiddleName.Data = "lblMiddleName";
+            this.lblMiddleName.Text = "Middle Name";
+            this.lblMiddleName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblMiddleName);
+            
+            this.lblLastName.Width = 4;
+            this.lblLastName.Height = 1;
+            this.lblLastName.X = 65;
+            this.lblLastName.Y = 3;
+            this.lblLastName.Visible = true;
+            this.lblLastName.Data = "lblLastName";
+            this.lblLastName.Text = "Last Name";
+            this.lblLastName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblLastName);
+            
+            this.txtFirstName.Width = 30;
+            this.txtFirstName.Height = 1;
+            this.txtFirstName.X = 1;
+            this.txtFirstName.Y = 4;
+            this.txtFirstName.Visible = true;
+            this.txtFirstName.Secret = false;
+            this.txtFirstName.Data = "txtFirstName";
+            this.txtFirstName.Text = "";
+            this.txtFirstName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtFirstName);
+            
+            this.txtMiddleName.Width = 30;
+            this.txtMiddleName.Height = 1;
+            this.txtMiddleName.X = 33;
+            this.txtMiddleName.Y = 4;
+            this.txtMiddleName.Visible = true;
+            this.txtMiddleName.Secret = false;
+            this.txtMiddleName.Data = "txtMiddleName";
+            this.txtMiddleName.Text = "";
+            this.txtMiddleName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtMiddleName);
+            
+            this.txtLastName.Width = 30;
+            this.txtLastName.Height = 1;
+            this.txtLastName.X = 65;
+            this.txtLastName.Y = 4;
+            this.txtLastName.Visible = true;
+            this.txtLastName.Secret = false;
+            this.txtLastName.Data = "txtLastName";
+            this.txtLastName.Text = "";
+            this.txtLastName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtLastName);
+            
+            this.lblSSN.Width = 4;
+            this.lblSSN.Height = 1;
+            this.lblSSN.X = 1;
+            this.lblSSN.Y = 6;
+            this.lblSSN.Visible = true;
+            this.lblSSN.Data = "lblSSN";
+            this.lblSSN.Text = "Social Security Number";
+            this.lblSSN.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblSSN);
+            
+            this.lblPassportNumber.Width = 30;
+            this.lblPassportNumber.Height = 1;
+            this.lblPassportNumber.X = 33;
+            this.lblPassportNumber.Y = 6;
+            this.lblPassportNumber.Visible = true;
+            this.lblPassportNumber.Data = "lblPassportNumber";
+            this.lblPassportNumber.Text = "Passport Number";
+            this.lblPassportNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblPassportNumber);
+            
+            this.lblLicenseNumber.Width = 4;
+            this.lblLicenseNumber.Height = 1;
+            this.lblLicenseNumber.X = 65;
+            this.lblLicenseNumber.Y = 6;
+            this.lblLicenseNumber.Visible = true;
+            this.lblLicenseNumber.Data = "lblLicenseNumber";
+            this.lblLicenseNumber.Text = "License Number";
+            this.lblLicenseNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblLicenseNumber);
+            
+            this.txtSSN.Width = 30;
+            this.txtSSN.Height = 1;
+            this.txtSSN.X = 1;
+            this.txtSSN.Y = 7;
+            this.txtSSN.Visible = true;
+            this.txtSSN.Secret = false;
+            this.txtSSN.Data = "txtSSN";
+            this.txtSSN.Text = "";
+            this.txtSSN.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtSSN);
+            
+            this.txtPassportNumber.Width = 30;
+            this.txtPassportNumber.Height = 1;
+            this.txtPassportNumber.X = 33;
+            this.txtPassportNumber.Y = 7;
+            this.txtPassportNumber.Visible = true;
+            this.txtPassportNumber.Secret = false;
+            this.txtPassportNumber.Data = "txtPassportNumber";
+            this.txtPassportNumber.Text = "";
+            this.txtPassportNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtPassportNumber);
+            
+            this.txtLicenseNumber.Width = 30;
+            this.txtLicenseNumber.Height = 1;
+            this.txtLicenseNumber.X = 65;
+            this.txtLicenseNumber.Y = 7;
+            this.txtLicenseNumber.Visible = true;
+            this.txtLicenseNumber.Secret = false;
+            this.txtLicenseNumber.Data = "txtLicenseNumber";
+            this.txtLicenseNumber.Text = "";
+            this.txtLicenseNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtLicenseNumber);
+            
+            this.lineView2.Width = 94;
+            this.lineView2.Height = 3;
+            this.lineView2.X = 1;
+            this.lineView2.Y = 9;
+            this.lineView2.Visible = true;
+            this.lineView2.Data = "lineView2";
+            this.lineView2.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.lineView2.LineRune = '─';
+            this.lineView2.Orientation = Terminal.Gui.Graphs.Orientation.Horizontal;
+            vwIdentity.Add(this.lineView2);
+            
+            this.lineView.Width = 1;
+            this.lineView.Height = 15;
+            this.lineView.X = 47;
+            this.lineView.Y = 9;
+            this.lineView.Visible = true;
+            this.lineView.Data = "lineView";
+            this.lineView.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.lineView.LineRune = '│';
+            this.lineView.Orientation = Terminal.Gui.Graphs.Orientation.Vertical;
+            vwIdentity.Add(this.lineView);
+            
+            this.lblAddress1.Width = 4;
+            this.lblAddress1.Height = 1;
+            this.lblAddress1.X = 1;
+            this.lblAddress1.Y = 10;
+            this.lblAddress1.Visible = true;
+            this.lblAddress1.Data = "lblAddress1";
+            this.lblAddress1.Text = "Address 1";
+            this.lblAddress1.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblAddress1);
+            
+            this.lblUserName.Width = 10;
+            this.lblUserName.Height = 1;
+            this.lblUserName.X = 49;
+            this.lblUserName.Y = 10;
+            this.lblUserName.Visible = true;
+            this.lblUserName.Data = "lblUserName";
+            this.lblUserName.Text = "User Name";
+            this.lblUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblUserName);
+            
+            this.txtAddress1.Width = 45;
+            this.txtAddress1.Height = 1;
+            this.txtAddress1.X = 1;
+            this.txtAddress1.Y = 11;
+            this.txtAddress1.Visible = true;
+            this.txtAddress1.Secret = false;
+            this.txtAddress1.Data = "txtAddress1";
+            this.txtAddress1.Text = "";
+            this.txtAddress1.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtAddress1);
+            
+            this.txtUserName.Width = 45;
+            this.txtUserName.Height = 1;
+            this.txtUserName.X = 49;
+            this.txtUserName.Y = 11;
+            this.txtUserName.Visible = true;
+            this.txtUserName.Secret = false;
+            this.txtUserName.Data = "txtUserName";
+            this.txtUserName.Text = "";
+            this.txtUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtUserName);
+            
+            this.lblAddress2.Width = 4;
+            this.lblAddress2.Height = 1;
+            this.lblAddress2.X = 1;
+            this.lblAddress2.Y = 13;
+            this.lblAddress2.Visible = true;
+            this.lblAddress2.Data = "lblAddress2";
+            this.lblAddress2.Text = "Address 2";
+            this.lblAddress2.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblAddress2);
+            
+            this.lblCompany.Width = 4;
+            this.lblCompany.Height = 1;
+            this.lblCompany.X = 49;
+            this.lblCompany.Y = 13;
+            this.lblCompany.Visible = true;
+            this.lblCompany.Data = "lblCompany";
+            this.lblCompany.Text = "Company";
+            this.lblCompany.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblCompany);
+            
+            this.txtAddress2.Width = 45;
+            this.txtAddress2.Height = 2;
+            this.txtAddress2.X = 1;
+            this.txtAddress2.Y = 14;
+            this.txtAddress2.Visible = true;
+            this.txtAddress2.Secret = false;
+            this.txtAddress2.Data = "txtAddress2";
+            this.txtAddress2.Text = "";
+            this.txtAddress2.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtAddress2);
+            
+            this.txtCompany.Width = 45;
+            this.txtCompany.Height = 1;
+            this.txtCompany.X = 49;
+            this.txtCompany.Y = 14;
+            this.txtCompany.Visible = true;
+            this.txtCompany.Secret = false;
+            this.txtCompany.Data = "txtCompany";
+            this.txtCompany.Text = "";
+            this.txtCompany.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtCompany);
+            
+            this.lblAddress3.Width = 4;
+            this.lblAddress3.Height = 1;
+            this.lblAddress3.X = 1;
+            this.lblAddress3.Y = 16;
+            this.lblAddress3.Visible = true;
+            this.lblAddress3.Data = "lblAddress3";
+            this.lblAddress3.Text = "Address 3";
+            this.lblAddress3.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblAddress3);
+            
+            this.lblEmail.Width = 4;
+            this.lblEmail.Height = 1;
+            this.lblEmail.X = 49;
+            this.lblEmail.Y = 16;
+            this.lblEmail.Visible = true;
+            this.lblEmail.Data = "lblEmail";
+            this.lblEmail.Text = "Email Address";
+            this.lblEmail.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblEmail);
+            
+            this.txtAddress3.Width = 45;
+            this.txtAddress3.Height = 1;
+            this.txtAddress3.X = 1;
+            this.txtAddress3.Y = 17;
+            this.txtAddress3.Visible = true;
+            this.txtAddress3.Secret = false;
+            this.txtAddress3.Data = "txtAddress3";
+            this.txtAddress3.Text = "";
+            this.txtAddress3.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtAddress3);
+            
+            this.txtEmailAddress.Width = 45;
+            this.txtEmailAddress.Height = 1;
+            this.txtEmailAddress.X = 49;
+            this.txtEmailAddress.Y = 17;
+            this.txtEmailAddress.Visible = true;
+            this.txtEmailAddress.Secret = false;
+            this.txtEmailAddress.Data = "txtEmailAddress";
+            this.txtEmailAddress.Text = "";
+            this.txtEmailAddress.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtEmailAddress);
+            
+            this.lblCity.Width = 4;
+            this.lblCity.Height = 1;
+            this.lblCity.X = 1;
+            this.lblCity.Y = 19;
+            this.lblCity.Visible = true;
+            this.lblCity.Data = "lblCity";
+            this.lblCity.Text = "City / Town";
+            this.lblCity.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblCity);
+            
+            this.lblState.Width = 4;
+            this.lblState.Height = 1;
+            this.lblState.X = 25;
+            this.lblState.Y = 19;
+            this.lblState.Visible = true;
+            this.lblState.Data = "lblState";
+            this.lblState.Text = "State / Province";
+            this.lblState.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblState);
+            
+            this.lblPhone.Width = 1;
+            this.lblPhone.Height = 1;
+            this.lblPhone.X = 49;
+            this.lblPhone.Y = 19;
+            this.lblPhone.Visible = true;
+            this.lblPhone.Data = "lblPhone";
+            this.lblPhone.Text = "Phone Number";
+            this.lblPhone.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblPhone);
+            
+            this.txtCity.Width = 21;
+            this.txtCity.Height = 1;
+            this.txtCity.X = 1;
+            this.txtCity.Y = 20;
+            this.txtCity.Visible = true;
+            this.txtCity.Secret = false;
+            this.txtCity.Data = "txtCity";
+            this.txtCity.Text = "";
+            this.txtCity.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtCity);
+            
+            this.txtState.Width = 21;
+            this.txtState.Height = 1;
+            this.txtState.X = 25;
+            this.txtState.Y = 20;
+            this.txtState.Visible = true;
+            this.txtState.Secret = false;
+            this.txtState.Data = "txtState";
+            this.txtState.Text = "";
+            this.txtState.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtState);
+            
+            this.txtPhoneNumber.Width = 45;
+            this.txtPhoneNumber.Height = 1;
+            this.txtPhoneNumber.X = 49;
+            this.txtPhoneNumber.Y = 20;
+            this.txtPhoneNumber.Visible = true;
+            this.txtPhoneNumber.Secret = false;
+            this.txtPhoneNumber.Data = "txtPhoneNumber";
+            this.txtPhoneNumber.Text = "";
+            this.txtPhoneNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtPhoneNumber);
+            
+            this.lblZipCode.Width = 4;
+            this.lblZipCode.Height = 1;
+            this.lblZipCode.X = 1;
+            this.lblZipCode.Y = 22;
+            this.lblZipCode.Visible = true;
+            this.lblZipCode.Data = "lblZipCode";
+            this.lblZipCode.Text = "Zip / Postal Code";
+            this.lblZipCode.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblZipCode);
+            
+            this.lblCountry.Width = 4;
+            this.lblCountry.Height = 1;
+            this.lblCountry.X = 25;
+            this.lblCountry.Y = 22;
+            this.lblCountry.Visible = true;
+            this.lblCountry.Data = "lblCountry";
+            this.lblCountry.Text = "Country";
+            this.lblCountry.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.lblCountry);
+            
+            this.txtZipCode.Width = 21;
+            this.txtZipCode.Height = 1;
+            this.txtZipCode.X = 1;
+            this.txtZipCode.Y = 23;
+            this.txtZipCode.Visible = true;
+            this.txtZipCode.Secret = false;
+            this.txtZipCode.Data = "txtZipCode";
+            this.txtZipCode.Text = "";
+            this.txtZipCode.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtZipCode);
+            
+            this.txtCountry.Width = 21;
+            this.txtCountry.Height = 1;
+            this.txtCountry.X = 25;
+            this.txtCountry.Y = 23;
+            this.txtCountry.Visible = true;
+            this.txtCountry.Secret = false;
+            this.txtCountry.Data = "txtCountry";
+            this.txtCountry.Text = "";
+            this.txtCountry.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            vwIdentity.Add(this.txtCountry);
+        }
+    }
+}
