@@ -165,25 +165,25 @@ namespace Retrowarden.Utils
                         logins.Children.Add(leaf);
                         break;
                     
-                    // Card
+                    // Note
                     case 2:
+                        
+                        // Add to branch.
+                        notes.Children.Add(leaf);
+                        break;
+                    
+                    // Card
+                    case 3:
                         
                         // Add to branch.
                         cards.Children.Add(leaf);
                         break;
-                    
-                    // Identity
-                    case 3:
-                        
-                        // Add to branch.
-                        identities.Children.Add(leaf);
-                        break;
 
-                    // Secure Note
+                    // Identity
                     case 4:
                         
                         // Add to branch.
-                        notes.Children.Add(leaf);
+                        identities.Children.Add(leaf);
                         break;
                 }
             }

@@ -149,7 +149,7 @@ namespace Retrowarden.Views
             this.lvwItems.KeyPress += HandleListViewKeyUp;
             this.lvwItems.OpenSelectedItem += HandleListViewOpenItem;
             this.lvwItems.Enter += HandleListviewEnter;
-            //this.lvwItems.MouseClick += HandleListviewMouseClick;
+            this.lvwItems.MouseClick += HandleListviewMouseClick;
             this.fraVault.Add(lvwItems);
             
             this.mnuMain = new MenuBar(new MenuBarItem[]
@@ -161,15 +161,20 @@ namespace Retrowarden.Views
                     new MenuItem("_Quit", "Quit Application", HandleQuitRequest, null, 
                         null)
                 }),
-                new MenuBarItem("Options", new MenuItem[]
+                new MenuBarItem("_Options", new MenuItem[]
                 {
                     new MenuItem("Boomer Mode!","Disable/Enable Mouse Use", HandleBoomerMode,null,null)
+                    {
+                        Checked = false,
+                        CheckType = MenuItemCheckStyle.Checked
+                    }
                 }),
                 new MenuBarItem ("_Help", new MenuItem [] {
                     new MenuItem ("_About...",
                         "", () =>  MessageBox.Query ("About Retrowarden", _aboutMessage.ToString(), "_Ok"), null, null, Key.CtrlMask | Key.A),
                 })
             });
+            
             this.mnuMain.Width = Dim.Fill(0);
             this.mnuMain.Height = 1;
             this.mnuMain.X = 0;

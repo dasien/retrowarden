@@ -12,10 +12,10 @@ namespace Retrowarden.Dialogs
         public SplashDialog(string message)
         {
             // Create modal view.
-            _dialog = new Dialog("", 60, 12);
+            _dialog = new Dialog("", 85, 12);
             
             // Create labels.
-            _message = ViewUtils.CreateControl<Label>(0,0,60,9, 0, 0, 
+            _message = ViewUtils.CreateControl<Label>(0,0,85,9, 0, 0, 
                 false, true, message, "lblMessage");
             
             // Add controls to view.
@@ -24,7 +24,7 @@ namespace Retrowarden.Dialogs
 
         public void Show()
         {
-            Application.MainLoop.AddTimeout (TimeSpan.FromMilliseconds(1000), Hide);
+            Application.MainLoop.AddTimeout (TimeSpan.FromMilliseconds(3000), Hide);
             Application.Run(_dialog);
         }
 

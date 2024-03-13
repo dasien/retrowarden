@@ -11,6 +11,7 @@ namespace Retrowarden.Utils
         private String _error;
         private String _sessionKey;
         private bool _cmdExit;
+        private bool _isLoggedIn;
         private String _cmdExitCode;
 
         public VaultProxy(string bwExeLocation)
@@ -19,7 +20,8 @@ namespace Retrowarden.Utils
             _response = "";
             _cmdExit = false;
             _cmdExitCode = "";
-
+            _isLoggedIn = false;
+            
             // Create exe caller.
             _bwcli = new Process();
             _bwcli.StartInfo.FileName = bwExeLocation;
@@ -60,6 +62,9 @@ namespace Retrowarden.Utils
                 
                 // Set env variable.
                 _bwcli.StartInfo.Environment.Add("BW_SESSION", _sessionKey);
+                
+                // At this point we are logged in.
+                _isLoggedIn = true;
             }
         }
         
@@ -74,11 +79,19 @@ namespace Retrowarden.Utils
         
         public void Logout()
         {
-            // Add parameters for call.
-            _bwcli.StartInfo.ArgumentList.Add("logout");
+            // Check to make sure we are logged in.
+            if (_isLoggedIn)
+            {
+                // Add parameters for call.
+                _bwcli.StartInfo.ArgumentList.Add("logout");
+                
+                // Execute.
+                ExecuteCommand();
+                
+                // Flip login bit.
+                _isLoggedIn = false;
+            }
 
-            // Execute.
-            ExecuteCommand();
         }
 
         public List<VaultFolder> ListFolders()
@@ -320,6 +333,12 @@ namespace Retrowarden.Utils
                 return _error;
             }
         }
+
+        public bool IsLoggedIn
+        {
+            get { return _isLoggedIn; }
+        }
+
         #endregion
     }
 }

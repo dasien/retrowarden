@@ -20,10 +20,10 @@ namespace Retrowarden.Models
         public string Id { get; set; }
         
         [JsonProperty("organizationId")]
-        public string OrganizationId { get; set; }
+        public string? OrganizationId { get; set; }
         
         [JsonProperty("folderId")]
-        public string FolderId { get; set; }
+        public string? FolderId { get; set; }
         
         [JsonProperty("type")]
         public int ItemType { get; set; }
@@ -35,7 +35,7 @@ namespace Retrowarden.Models
         public bool IsFavorite { get; set; }
         
         [JsonProperty("notes")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         
         [JsonProperty("reprompt")]
         public int Reprompt { get; set; }
@@ -49,12 +49,21 @@ namespace Retrowarden.Models
         [JsonProperty("deleteDate")]
         public DateTime DeletionDate { get; set; }
         
-        [JsonProperty("login")]
-        public Login Login { get; set; }
-        
         [JsonProperty("collectionIds")]
         public List<string> CollectionIds { get; set; }
         
+        [JsonProperty("login")]
+        public Login Login { get; set; }
+        
+        [JsonProperty("card")]
+        public Card Card { get; set; }
+        
+        [JsonProperty("identity")]
+        public Identity Identity { get; set; }
+
+        [JsonProperty("secureNote")]
+        public SecureNote SecureNote { get; set; }
+
         // Helper properties.
         [JsonIgnore]
         public string ItemOwnerName { get; set; }

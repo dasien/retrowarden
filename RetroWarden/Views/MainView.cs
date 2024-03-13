@@ -20,6 +20,8 @@ namespace Retrowarden.Views
         private readonly List<string> _selectedRows;
         private StringBuilder _aboutMessage;
         private VaultItem _tempItem;
+        private bool _splashShown;
+        private bool _boomerMode;
         
         public MainView() 
         {
@@ -27,7 +29,7 @@ namespace Retrowarden.Views
             Application.Init();
             
             // Create about message.
-            CreateAboutMessageASCII();
+            CreateAboutMessageAscii();
             
             // Load the configuration file.
             ConfigurationManager manager = ConfigurationManager.Instance;
@@ -78,27 +80,39 @@ namespace Retrowarden.Views
             
             // Setup screen controls.
             InitializeComponent();
-
-            // Show splash screen.
-            SplashDialog splash = new SplashDialog(_aboutMessage.ToString());
-            splash.Show();
-
+            
+            // Set timer to launch splash.
+            object timerToken = Application.MainLoop.AddTimeout (TimeSpan.FromMilliseconds(80), ShowSplashScreen);
+            
             // Run the application loop.
             Application.Run(this);
         }
 
-        private void CreateAboutMessageASCII()
+        private bool ShowSplashScreen(MainLoop arg)
         {
-            _aboutMessage = new StringBuilder ();
-            _aboutMessage.AppendLine (@"A terminal.gui based client for Bitwarden");
-            _aboutMessage.AppendLine (@"");			
-            _aboutMessage.AppendLine (@"______     _                                  _            ");
-            _aboutMessage.AppendLine (@"| ___ \   | |                                | |           ");
-            _aboutMessage.AppendLine (@"| |_/ /___| |_ _ __ _____      ____ _ _ __ __| | ___ _ __  ");
-            _aboutMessage.AppendLine (@"|    // _ \ __| '__/ _ \ \ /\ / / _` | '__/ _` |/ _ \ '_ \ ");
-            _aboutMessage.AppendLine (@"| |\ \  __/ |_| | | (_) \ V  V / (_| | | | (_| |  __/ | | |");
-            _aboutMessage.AppendLine (@"\_| \_\___|\__|_|  \___/ \_/\_/ \__,_|_|  \__,_|\___|_| |_|");
-            _aboutMessage.AppendLine (@""); 
+            if (!_splashShown)
+            {
+                // Show splash screen.
+                SplashDialog splash = new SplashDialog(_aboutMessage.ToString());
+                splash.Show();
+                _splashShown = false;
+            }
+
+            return false;
+        }
+        
+        private void CreateAboutMessageAscii()
+        {
+            _aboutMessage = new StringBuilder();
+            _aboutMessage.AppendLine (@" ******************               A terminal.gui based client for Bitwarden");
+            _aboutMessage.AppendLine (@" ********       #**     ");			
+            _aboutMessage.AppendLine (@" ********       #**     ______     _                                  _            ");
+            _aboutMessage.AppendLine (@" ********       #**     | ___ \   | |                                | |           ");
+            _aboutMessage.AppendLine (@" ********       ***     | |_/ /___| |_ _ __ _____      ____ _ _ __ __| | ___ _ __  ");
+            _aboutMessage.AppendLine (@"  *******     ****      |    // _ \ __| '__/ _ \ \ /\ / / _` | '__/ _` |/ _ \ '_ \ ");
+            _aboutMessage.AppendLine (@"   ******   ****        | |\ \  __/ |_| | | (_) \ V  V / (_| | | | (_| |  __/ | | |");
+            _aboutMessage.AppendLine (@"    **********          \_| \_\___|\__|_|  \___/ \_/\_/ \__,_|_|  \__,_|\___|_| |_|");
+            _aboutMessage.AppendLine (@"       ****             "); 
         }
 
         #region UI Control Helpers
@@ -188,33 +202,57 @@ namespace Retrowarden.Views
         
         private void ShowDetailForm(VaultItemDetailViewState state)
         {
-            // Create item detail dialog.
-            VaultItemDetailView detailView = new VaultItemDetailView(_tempItem, _folders, state);
+            ItemDetailView view = null;
+            
+            // Check to see what type of item we have.
+            switch (_tempItem.ItemType)
+            {
+                // Login
+                case 1:
+                    // Create item detail dialog.
+                    view = new LoginDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Note
+                case 2:
+                    view = new SecureNoteDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Card
+                case 3:
+                    view = new CardDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Identity
+                case 4:
+                    view = new IdentityDetailView(_tempItem, _folders, state);
+                    break;
+            }
 
             // Update title.
             switch (state)
             {
                 case VaultItemDetailViewState.Create:
-                    detailView.Title = "Create New Item";
+                    view.Title = "Create New Item";
                     break;
 
                 case VaultItemDetailViewState.Edit:
-                    detailView.Title = "Edit Item - " + _tempItem.ItemName;
+                    view.Title = "Edit Item - " + _tempItem.ItemName;
                     break;
 
                 case VaultItemDetailViewState.View:
-                    detailView.Title = "View Item - " + _tempItem.ItemName;
+                    view.Title = "View Item - " + _tempItem.ItemName;
                     break;
             }
 
             // Show the view modal.
-            detailView.Show();
+            view.Show();
             
             // Check to see if there is anything to do.
-            if (detailView.OkPressed && detailView.Item.IsDirty)
+            if (view.OkPressed)
             {
                 // Create list to hold item.
-                List<VaultItem> items = new List<VaultItem> {detailView.Item};
+                List<VaultItem> items = new List<VaultItem> {view.Item};
 
                 switch (state)
                 {
@@ -344,42 +382,51 @@ namespace Retrowarden.Views
         #region Event Handlers
         private void HandleConnectionRequest()
         {
-            ConnectDialog connectDialog = new ConnectDialog();
-
-            connectDialog.Show();
-            
-            if (connectDialog.OkPressed)
+            // Check to make sure we are not logged in already.
+            if (_vaultProxy.IsLoggedIn)
             {
-                // Run login worker and show working dialog.
-                RunLoginWorker(connectDialog.UserId, connectDialog.Password);
-                
-                // Check to see if the login was successful.
-                if (_vaultProxy.ExitCode == "0")
+                MessageBox.ErrorQuery("Action failed","You are already logged in.", "Ok");
+            }
+
+            else
+            {
+                ConnectDialog connectDialog = new ConnectDialog();
+
+                connectDialog.Show();
+
+                if (connectDialog.OkPressed)
                 {
-                    // Run workers for items, folders, and collections.
-                    RunGetItemsWorker();
-                    
-                    // Check to see if items were found.
+                    // Run login worker and show working dialog.
+                    RunLoginWorker(connectDialog.UserId, connectDialog.Password);
+
+                    // Check to see if the login was successful.
                     if (_vaultProxy.ExitCode == "0")
                     {
-                        // Run workers for folders and collections.
-                        RunGetFoldersWorker();
-                        RunGetCollectionsWorker();
-                        RunGetOrganizationsWorker();
-                        
-                        // Set item owner name.
-                        SetOwnerNameForItems();
-                        
-                        // Load controls with data.
-                        LoadTreeView();
-                        LoadItemListView(_vaultItems);
-                    }
-                }
+                        // Run workers for items, folders, and collections.
+                        RunGetItemsWorker();
 
-                else
-                {
-                    // Show error dialog.
-                    MessageBox.ErrorQuery("Login failed.", _vaultProxy.ErrorMessage, "Ok");
+                        // Check to see if items were found.
+                        if (_vaultProxy.ExitCode == "0")
+                        {
+                            // Run workers for folders and collections.
+                            RunGetFoldersWorker();
+                            RunGetCollectionsWorker();
+                            RunGetOrganizationsWorker();
+
+                            // Set item owner name.
+                            SetOwnerNameForItems();
+
+                            // Load controls with data.
+                            LoadTreeView();
+                            LoadItemListView(_vaultItems);
+                        }
+                    }
+
+                    else
+                    {
+                        // Show error dialog.
+                        MessageBox.ErrorQuery("Login failed.", _vaultProxy.ErrorMessage, "Ok");
+                    }
                 }
             }
         }
@@ -504,14 +551,21 @@ namespace Retrowarden.Views
         
         private void HandleBoomerMode()
         {
-            throw new NotImplementedException();
+            // Toggle boomer mode.
+            _boomerMode = !_boomerMode;
+            
+            // Set menu state.
+            mnuMain.Menus[1].Children[0].Checked = _boomerMode;
+            
+            // Set this to the desired state
+            Application.IsMouseDisabled = _boomerMode;
         }
         #endregion
 
         private void HandleListViewSelectedItemChanged(ListViewItemEventArgs obj)
         {
             // Hold a temp reference to current item.
-            _tempItem = (VaultItem)obj.Value;
+            _tempItem = (VaultItem) obj.Value;
         }
 
         private void HandleListViewKeyUp(KeyEventEventArgs obj)
@@ -519,43 +573,47 @@ namespace Retrowarden.Views
             // Check to see which key was pressed.
             if (obj.KeyEvent.Key == Key.Space)
             {
-                // Check to see if it is in the list of selected items.
-                if (_selectedRows.Contains(_tempItem.Id))
+                // Check to make sure we have an item.
+                if (_tempItem != null)
                 {
-                    // Remove it (the user has unselected the row).  
-                    _selectedRows.Remove(_tempItem.Id);
-                }
+                    // Check to see if it is in the list of selected items.
+                    if (_selectedRows.Contains(_tempItem.Id))
+                    {
+                        // Remove it (the user has unselected the row).  
+                        _selectedRows.Remove(_tempItem.Id);
+                    }
 
-                else
-                {
-                    // If not there, add it.
-                    _selectedRows.Add(_tempItem.Id);    
-                }
+                    else
+                    {
+                        // If not there, add it.
+                        _selectedRows.Add(_tempItem.Id);    
+                    }
             
-                // Check to see how many rows have been selected.
-                switch (_selectedRows.Count)
-                {
-                    // If 0, disable menu items.
-                    case 0:
-                        // Add them to the status bar.
-                        staMain.Items = [stiHelp];
-                        break;
+                    // Check to see how many rows have been selected.
+                    switch (_selectedRows.Count)
+                    {
+                        // If 0, disable menu items.
+                        case 0:
+                            // Add them to the status bar.
+                            staMain.Items = [stiHelp];
+                            break;
                 
-                    // If 1, enable menu items.
-                    case 1:
-                        // Add them to the status bar.
-                        staMain.Items = [stiHelp, stiView, stiEdit, stiCopyUser, stiCopyPwd, stiFolderMove, stiCollectionMove];
-                        break;
+                        // If 1, enable menu items.
+                        case 1:
+                            // Add them to the status bar.
+                            staMain.Items = [stiHelp, stiView, stiEdit, stiCopyUser, stiCopyPwd, stiFolderMove, stiCollectionMove];
+                            break;
                 
-                    // If > 1, enable only bulk menu items (add to folder).
-                    default:
-                        // Add them to the status bar.
-                        staMain.Items = [stiHelp, stiFolderMove, stiCollectionMove];
-                        break;
-                }        
+                        // If > 1, enable only bulk menu items (add to folder).
+                        default:
+                            // Add them to the status bar.
+                            staMain.Items = [stiHelp, stiFolderMove, stiCollectionMove];
+                            break;
+                    }        
                 
-                // Redraw menu bar.
-                staMain.SetNeedsDisplay();
+                    // Redraw menu bar.
+                    staMain.SetNeedsDisplay();
+                }
             }
         }
 
@@ -577,7 +635,9 @@ namespace Retrowarden.Views
 
         private void HandleListviewMouseClick(MouseEventArgs obj)
         {
-            throw new NotImplementedException();
+            int rownum = lvwItems.SelectedItem;
+            //obj.Handled = true;
+            Console.Write("Here");
         }
     }
 }

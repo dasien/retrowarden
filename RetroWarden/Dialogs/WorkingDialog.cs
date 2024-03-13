@@ -68,9 +68,6 @@ namespace Retrowarden.Dialogs
         
         private bool UpdateAnimationLabel(MainLoop arg)
         {
-            // Get index of animation control.
-            int index = _dialog.Subviews.IndexOf(_animation);
-            
             // Update text.
             _dialog.Subviews[0].Subviews[0].Text = _spinner[_animationIndex];
             _dialog.Subviews[0].Subviews[0].SetNeedsDisplay();

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
 using Terminal.Gui;
 using Retrowarden.Models;
@@ -6,55 +7,51 @@ using Retrowarden.Utils;
 
 namespace Retrowarden.Views 
 {
-    public partial class VaultItemDetailView
+    public partial class LoginDetailView : ItemDetailView
     {
-        private VaultItem _item;
-        private readonly List<VaultFolder> _folders;
-        private List<string> _matchDetections;
-        private List<string> _folderNames;
+        private List<CodeListItem> _matchDetections;
         private List<View[]> _rowControls;
-        private readonly VaultItemDetailViewState _viewState;
-        private bool _okPressed;
-        public VaultItemDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
+
+        public LoginDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
+            : base (item, folders, state)
         {
-            // Set private variables.
-            _item = item == null ? new VaultItem() : item;
-            _viewState = state;
-            _folders = folders;
-            _okPressed = false;
-            _folderNames = new List<string>();
-            _matchDetections = new List<string>();
-            
-            InitializeComponent();
-            
             // Update controls based on view state.
             SetupView();
         }
         
-        private void SetupView()
+        private new void SetupView()
         {
+            InitializeComponent();
+            
             // Initialize any list controls.
             InitializeLists();
             
             // Base setup what kind of view state we are in.
-            if (_viewState == VaultItemDetailViewState.View)
+            if (_viewState == VaultItemDetailViewState.View || _viewState == VaultItemDetailViewState.Edit)
             {
                 // Load controls with current data only.
                 LoadView();
                 
-                // Disable control state.
-                DisableView();
+                if (_viewState == VaultItemDetailViewState.View)
+                {
+                    // Disable control state.
+                    DisableView();
+                }
             }
+            
+            // Set our main view to the view area of the parent view.
+            base.DetailView = vwLogin;
+
+            // Setup common view parts.
+            base.SetupView();
         }
 
-        private void LoadView()
+        private new void LoadView()
         {
             // Set current item values to controls.
-            txtItemName.Text = _item.ItemName == null ? "" : _item.ItemName;
-            txtUserName.Text = _item.Login.UserName == null ? "" : _item.Login.UserName;
-            txtPassword.Text = _item.Login.Password == null ? "" : _item.Login.Password;
-            txtTOTP.Text = _item.Login.TOTP == null ? "" : _item.Login.TOTP;
-            tvwNotes.Text = _item.Notes == null ? "" : _item.Notes;
+            txtUserName.Text = _item.Login.UserName ?? "";
+            txtPassword.Text = _item.Login.Password ?? "";
+            txtTOTP.Text = _item.Login.TOTP ?? "";
             
             // Check to see if there is a URI at all.
             if (_item.Login.URIs != null)
@@ -64,28 +61,27 @@ namespace Retrowarden.Views
             }
         }
 
-        private void DisableView()
+        private new void DisableView()
         {
             //btnSave.Enabled = false;
             
             // Loop through the list of URIs and disable the delete buttons.
+            
         }
         
         private void InitializeLists()
         {
             // Create list of match types.
-            _matchDetections = new List<string>
+            _matchDetections = new List<CodeListItem>
             {
-                "Default", "Base Domain", "Host", "Starts With", "Regular Expression",
-                "Exact Match", "Never"
+                new CodeListItem("0", "Base Domain"),
+                new CodeListItem("1", "Host"),
+                new CodeListItem("2", "Starts With"),
+                new CodeListItem("3", "Regular Expression"),
+                new CodeListItem("4", "Exact Match"),
+                new CodeListItem("5", "Never"),
+                new CodeListItem(null, "Default")
             };
-            
-            // Load combobox.
-            for (int cnt = 0; cnt < _folders.Count; cnt++)
-            {
-                // Move to a simple collection the combo box can understand.
-                _folderNames.Add(_folders[cnt].Name);
-            }
         }
         
         private void CreateUriListRows()
@@ -114,6 +110,16 @@ namespace Retrowarden.Views
                 // For the delete button, assign an identifier for the row of controls
                 btnDeleteURI.Data = new Guid().ToString();
                 
+                // Set the match combo source and selected item to uri match or "Default" as a null default.
+                cboMatchURI.SetSource(_matchDetections);
+                cboMatchURI.SelectedItem = _matchDetections.FindIndex(o => Convert.ToInt32(o.Index) == uri.Match);
+                
+                // This is a hack because for some reason we love to allow "null" in lists as a default value. :/ 
+                if (uri.Match == null)
+                {
+                    cboMatchURI.SelectedItem = _matchDetections.FindIndex(o => o.Index == null);
+                }
+                
                 // Create event handlers for the buttons.
                 btnCopyURI.Clicked += () =>
                 {
@@ -126,9 +132,8 @@ namespace Retrowarden.Views
 
                 btnGoURI.Clicked += () =>
                 {
-                    Uri result;
                     // Check to see if we have a valid URI.
-                    if (Uri.TryCreate(txtURI.Text.ToString(), UriKind.Absolute, out result))
+                    if (Uri.TryCreate(txtURI.Text.ToString(), UriKind.Absolute, out _))
                     {
                         Process.Start(new ProcessStartInfo(txtURI.Text.ToString()) { UseShellExecute = true });    
                     }
@@ -164,8 +169,6 @@ namespace Retrowarden.Views
                     // Set scroll for redraw.
                     scrURIList.SetNeedsDisplay();
                 };
-                
-                // Set list source and selected item for combo box.
                 
                 // Add views to row array
                 View[] rowctl = [txtURI, btnCopyURI, btnGoURI, cboMatchURI, btnDeleteURI];
@@ -240,15 +243,19 @@ namespace Retrowarden.Views
             // Update URI list.
             _item.Login.URIs = uris;
         }
-        
-        private void UpdateItem()
+
+        protected override void UpdateItem()
         {
+            // Call base method.
+            base.UpdateItem();
+            
             // Set item properties.
-            _item.ItemName = txtItemName.Text.ToString();
-            _item.IsFavorite = chkFavorite.Checked;
             _item.Login.UserName = txtUserName.Text.ToString();
             _item.Login.Password = txtPassword.Text.ToString();
             _item.Login.TOTP = txtTOTP.Text.ToString();
+
+            // Update the URI list.
+            UpdateItemUriList();
         }
         
         public void Show()
@@ -256,27 +263,11 @@ namespace Retrowarden.Views
             Application.Run(this);
         }
         
-        public bool OkPressed
-        {
-            get { return _okPressed; }
-        }
-
-        public VaultItem Item
-        {
-            get { return _item; }
-        }
-        
         #region Event Handlers
-        private void CancelButton_Clicked()
-        {
-            // Close dialog.
-            Application.RequestStop();
-        }
-
-        private void SaveButtonClicked()
+        protected override void SaveButtonClicked()
         {
             // Check to see that an item name is present (it is required).
-            if (txtItemName.Text == null)
+            if (base.ItemName.Text == null)
             {
                 MessageBox.ErrorQuery("Action failed.", "Item name must have a value.", "Ok");
             }
@@ -297,14 +288,14 @@ namespace Retrowarden.Views
                 }
 
                 // Flag that the save button was pressed.
-                _okPressed = true;
+                OkPressed = true;
             }
         }
 
         private void CopyPasswordButtonClicked()
         {
             // Copy password to clipboard.
-            Clipboard.TrySetClipboardData(_item.Login.Password);
+            Clipboard.TrySetClipboardData(txtPassword.Text.ToString());
 
             // Indicate data copied.
             MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
@@ -322,12 +313,11 @@ namespace Retrowarden.Views
 
         private void CopyUserNameButtonClicked()
         {
-            // Copy password to clipboard.
-            Clipboard.TrySetClipboardData(_item.Login.UserName);
+            // Copy username to clipboard.
+            Clipboard.TrySetClipboardData(txtUserName.Text.ToString());
 
             // Indicate data copied.
             MessageBox.Query("Action Completed", "User name copied to clipboard.", "Ok");
-
         }
 
         private void GeneratePasswordButtonClicked()

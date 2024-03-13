@@ -1,5 +1,7 @@
 Decide on whether or not to make table view more like Windows Explorer (show folders and collections as well as items based on treeview selection)
 Update table for multiselect actions (add to folder, move to collection, etc.)
+add tabstops to controls
+handle mouse click in main listview.  right now it confuses the logic for when things are selected 
 Error Handling! :)
 Eiter make dialogs standard size and hard code button locations or make button locations dynamic based on dialog size
 
