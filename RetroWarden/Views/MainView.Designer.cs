@@ -94,6 +94,7 @@ namespace Retrowarden.Views
             this.tvwItems.Style.LeaveLastRow = false;
             this.tvwItems.Style.ShowBranchLines = true;
             this.tvwItems.SelectionChanged += HandleTreeviewSelectionChanged;
+            tvwItems.ObjectActivated += HandleTreeviewNodeActivated;
             this.fraItems.Add(this.tvwItems);
             
             this.fraVault.Width = 86;

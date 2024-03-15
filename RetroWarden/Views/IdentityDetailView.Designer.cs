@@ -112,6 +112,7 @@ namespace Retrowarden.Views
             this.cboTitle.Data = "cboTitle";
             this.cboTitle.Text = "";
             this.cboTitle.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.cboTitle.TabIndex = 3;
             vwIdentity.Add(this.cboTitle);
             
             this.lblFirstName.Width = 4;
@@ -153,6 +154,7 @@ namespace Retrowarden.Views
             this.txtFirstName.Data = "txtFirstName";
             this.txtFirstName.Text = "";
             this.txtFirstName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtFirstName.TabIndex = 4;
             vwIdentity.Add(this.txtFirstName);
             
             this.txtMiddleName.Width = 30;
@@ -164,6 +166,7 @@ namespace Retrowarden.Views
             this.txtMiddleName.Data = "txtMiddleName";
             this.txtMiddleName.Text = "";
             this.txtMiddleName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtMiddleName.TabIndex = 5;
             vwIdentity.Add(this.txtMiddleName);
             
             this.txtLastName.Width = 30;
@@ -175,6 +178,7 @@ namespace Retrowarden.Views
             this.txtLastName.Data = "txtLastName";
             this.txtLastName.Text = "";
             this.txtLastName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtLastName.TabIndex = 6;
             vwIdentity.Add(this.txtLastName);
             
             this.lblSSN.Width = 4;
@@ -216,6 +220,7 @@ namespace Retrowarden.Views
             this.txtSSN.Data = "txtSSN";
             this.txtSSN.Text = "";
             this.txtSSN.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtSSN.TabIndex = 7;
             vwIdentity.Add(this.txtSSN);
             
             this.txtPassportNumber.Width = 30;
@@ -227,6 +232,7 @@ namespace Retrowarden.Views
             this.txtPassportNumber.Data = "txtPassportNumber";
             this.txtPassportNumber.Text = "";
             this.txtPassportNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtPassportNumber.TabIndex = 8;
             vwIdentity.Add(this.txtPassportNumber);
             
             this.txtLicenseNumber.Width = 30;
@@ -238,6 +244,7 @@ namespace Retrowarden.Views
             this.txtLicenseNumber.Data = "txtLicenseNumber";
             this.txtLicenseNumber.Text = "";
             this.txtLicenseNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtLicenseNumber.TabIndex = 9;
             vwIdentity.Add(this.txtLicenseNumber);
             
             this.lineView2.Width = 94;
@@ -291,6 +298,7 @@ namespace Retrowarden.Views
             this.txtAddress1.Data = "txtAddress1";
             this.txtAddress1.Text = "";
             this.txtAddress1.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtAddress1.TabIndex = 10;
             vwIdentity.Add(this.txtAddress1);
             
             this.txtUserName.Width = 45;
@@ -302,6 +310,7 @@ namespace Retrowarden.Views
             this.txtUserName.Data = "txtUserName";
             this.txtUserName.Text = "";
             this.txtUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //txtUserName.TabIndex = 11;
             vwIdentity.Add(this.txtUserName);
             
             this.lblAddress2.Width = 4;
@@ -333,6 +342,7 @@ namespace Retrowarden.Views
             this.txtAddress2.Data = "txtAddress2";
             this.txtAddress2.Text = "";
             this.txtAddress2.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtAddress2.TabIndex = 12;
             vwIdentity.Add(this.txtAddress2);
             
             this.txtCompany.Width = 45;
@@ -344,6 +354,7 @@ namespace Retrowarden.Views
             this.txtCompany.Data = "txtCompany";
             this.txtCompany.Text = "";
             this.txtCompany.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtCompany.TabIndex = 13;
             vwIdentity.Add(this.txtCompany);
             
             this.lblAddress3.Width = 4;
@@ -375,6 +386,7 @@ namespace Retrowarden.Views
             this.txtAddress3.Data = "txtAddress3";
             this.txtAddress3.Text = "";
             this.txtAddress3.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtAddress3.TabIndex = 14;
             vwIdentity.Add(this.txtAddress3);
             
             this.txtEmailAddress.Width = 45;
@@ -386,6 +398,7 @@ namespace Retrowarden.Views
             this.txtEmailAddress.Data = "txtEmailAddress";
             this.txtEmailAddress.Text = "";
             this.txtEmailAddress.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtEmailAddress.TabIndex = 15;
             vwIdentity.Add(this.txtEmailAddress);
             
             this.lblCity.Width = 4;
@@ -427,6 +440,7 @@ namespace Retrowarden.Views
             this.txtCity.Data = "txtCity";
             this.txtCity.Text = "";
             this.txtCity.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtCity.TabIndex = 16;
             vwIdentity.Add(this.txtCity);
             
             this.txtState.Width = 21;
@@ -438,6 +452,7 @@ namespace Retrowarden.Views
             this.txtState.Data = "txtState";
             this.txtState.Text = "";
             this.txtState.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtState.TabIndex = 17;
             vwIdentity.Add(this.txtState);
             
             this.txtPhoneNumber.Width = 45;
@@ -449,6 +464,7 @@ namespace Retrowarden.Views
             this.txtPhoneNumber.Data = "txtPhoneNumber";
             this.txtPhoneNumber.Text = "";
             this.txtPhoneNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtPhoneNumber.TabIndex = 18;
             vwIdentity.Add(this.txtPhoneNumber);
             
             this.lblZipCode.Width = 4;
@@ -480,6 +496,7 @@ namespace Retrowarden.Views
             this.txtZipCode.Data = "txtZipCode";
             this.txtZipCode.Text = "";
             this.txtZipCode.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtZipCode.TabIndex = 19;
             vwIdentity.Add(this.txtZipCode);
             
             this.txtCountry.Width = 21;
@@ -491,6 +508,7 @@ namespace Retrowarden.Views
             this.txtCountry.Data = "txtCountry";
             this.txtCountry.Text = "";
             this.txtCountry.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtCountry.TabIndex = 20;
             vwIdentity.Add(this.txtCountry);
         }
     }

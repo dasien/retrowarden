@@ -53,7 +53,7 @@ namespace Retrowarden.Views
             this.lblUserName.Data = "lblUserName";
             this.lblUserName.Text = "Username";
             this.lblUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.vwLogin.Add(this.lblUserName);
+           this.vwLogin.Add(this.lblUserName);
             
             this.lblPassword.Width = 4;
             this.lblPassword.Height = 1;
@@ -74,6 +74,7 @@ namespace Retrowarden.Views
             this.txtUserName.Data = "txtUserName";
             this.txtUserName.Text = "";
             this.txtUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtUserName.TabIndex = 3;
             this.vwLogin.Add(this.txtUserName);
             
             this.btnCopyUserName.Width = 8;
@@ -86,6 +87,7 @@ namespace Retrowarden.Views
             this.btnCopyUserName.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnCopyUserName.IsDefault = false;
             this.btnCopyUserName.Clicked += CopyUserNameButtonClicked;
+            //this.btnCopyUserName.TabIndex = 4;
             this.vwLogin.Add(this.btnCopyUserName);
             
             this.txtPassword.Width = 21;
@@ -97,6 +99,7 @@ namespace Retrowarden.Views
             this.txtPassword.Data = "txtPassword";
             this.txtPassword.Text = "";
             this.txtPassword.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtPassword.TabIndex = 5;
             this.vwLogin.Add(this.txtPassword);
             
             this.btnViewPassword.Width = 8;
@@ -109,6 +112,7 @@ namespace Retrowarden.Views
             this.btnViewPassword.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnViewPassword.IsDefault = false;
             this.btnViewPassword.Clicked += ViewPasswordButtonClicked;
+            //this.btnViewPassword.TabIndex = 6;
             this.vwLogin.Add(this.btnViewPassword);
             
             this.btnCopyPassword.Width = 8;
@@ -121,6 +125,7 @@ namespace Retrowarden.Views
             this.btnCopyPassword.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnCopyPassword.IsDefault = false;
             this.btnCopyPassword.Clicked += CopyPasswordButtonClicked;
+            //this.btnCopyPassword.TabIndex = 7;
             this.vwLogin.Add(this.btnCopyPassword);
             
             this.btnGeneratePassword.Width = 12;
@@ -133,6 +138,7 @@ namespace Retrowarden.Views
             this.btnGeneratePassword.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnGeneratePassword.IsDefault = false;
             this.btnGeneratePassword.Clicked += GeneratePasswordButtonClicked;
+            //this.btnGeneratePassword.TabIndex = 8;
             this.vwLogin.Add(this.btnGeneratePassword);
             
             this.lblTOTP.Width = 4;
@@ -154,6 +160,7 @@ namespace Retrowarden.Views
             this.txtTOTP.Data = "txtTOTP";
             this.txtTOTP.Text = "";
             this.txtTOTP.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            //this.txtTOTP.TabIndex = 9;
             this.vwLogin.Add(this.txtTOTP);
             
             this.fraURIList.Width = 97;

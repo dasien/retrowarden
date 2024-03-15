@@ -170,5 +170,15 @@ namespace Retrowarden.Views
             // Indicate data copied.
             MessageBox.Query("Action Completed", "Card CVV copied to clipboard.", "Ok");
         }
+
+        private void HandleControlEnter(FocusEventArgs obj)
+        {
+            if (obj.View.GetType() == typeof(TextField))
+            {
+                TextField focus = (TextField) obj.View;
+                focus.SelectAll();
+                
+            }
+        }
     }
 }

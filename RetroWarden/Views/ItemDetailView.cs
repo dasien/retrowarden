@@ -13,7 +13,7 @@ namespace Retrowarden.Views
         private List<CodeListItem> _folderNames;
         protected readonly VaultItemDetailViewState _viewState;
         private bool _okPressed;
-
+        
         protected ItemDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
         {
             // Set private variables.
@@ -79,6 +79,14 @@ namespace Retrowarden.Views
 
         private void RelocateFooterControls()
         {
+            // Get the tab indexes for the subview.
+            //int maxTabStop = _subView.TabIndexes.Last().TabIndex;
+            
+            // Set the tab indexes of the notes view and buttons to be higher than the max from subview.
+            //tvwNotes.TabIndex = maxTabStop + 1;
+            //btnSave.TabIndex = tvwNotes.TabIndex + 1;
+            //btnCancel.TabIndex = btnSave.TabIndex + 1;
+
             // Update Y of the notes frame to detail view bottom + 2
             fraNotes.Y = Pos.Bottom(_subView) + 2;
             

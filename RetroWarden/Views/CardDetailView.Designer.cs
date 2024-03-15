@@ -79,8 +79,8 @@ namespace Retrowarden.Views
             this.txtCardholderName.Data = "txtCardholderName";
             this.txtCardholderName.Text = "";
             this.txtCardholderName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCardholderName.TabIndex = 3;
-            this.txtCardholderName.DesiredCursorVisibility = CursorVisibility.Box;
+            this.txtCardholderName.Enter += HandleControlEnter;
+            //this.txtCardholderName.TabIndex = 3;
             vwCard.Add(this.txtCardholderName);
             
             this.cboCardBrand.Width = 30;
@@ -91,7 +91,7 @@ namespace Retrowarden.Views
             this.cboCardBrand.Data = "cboCardBrand";
             this.cboCardBrand.Text = "";
             this.cboCardBrand.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.cboCardBrand.TabIndex = 4;
+            //this.cboCardBrand.TabIndex = 4;
             vwCard.Add(this.cboCardBrand);
             
             this.lblCardNumber.Width = 4;
@@ -123,7 +123,8 @@ namespace Retrowarden.Views
             this.txtCardNumber.Data = "txtCardNumber";
             this.txtCardNumber.Text = "";
             this.txtCardNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCardNumber.TabIndex = 5;
+            this.txtCardNumber.Enter += HandleControlEnter;
+            //this.txtCardNumber.TabIndex = 5;
             vwCard.Add(this.txtCardNumber);
             
             this.btnShowCardNumber.Width = 8;
@@ -135,7 +136,7 @@ namespace Retrowarden.Views
             this.btnShowCardNumber.Text = "Show";
             this.btnShowCardNumber.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnShowCardNumber.IsDefault = false;
-            this.btnShowCardNumber.TabIndex = 6;
+            //this.btnShowCardNumber.TabIndex = 6;
             this.btnShowCardNumber.Clicked += ShowCardButtonClicked;
             vwCard.Add(this.btnShowCardNumber);
             
@@ -148,7 +149,7 @@ namespace Retrowarden.Views
             this.btnCopyCardNumber.Text = "Copy";
             this.btnCopyCardNumber.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnCopyCardNumber.IsDefault = false;
-            this.btnCopyCardNumber.TabIndex = 7;
+            //this.btnCopyCardNumber.TabIndex = 7;
             this.btnCopyCardNumber.Clicked += CopyCardButtonClicked;
             vwCard.Add(this.btnCopyCardNumber);
             
@@ -161,19 +162,20 @@ namespace Retrowarden.Views
             this.txtCVV.Data = "txtCVV";
             this.txtCVV.Text = "";
             this.txtCVV.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCVV.TabIndex = 8;
+            this.txtCVV.Enter += HandleControlEnter;
+            //this.txtCVV.TabIndex = 8;
             vwCard.Add(this.txtCVV);
             
             this.btnShowCVV.Width = 8;
             this.btnShowCVV.Height = 1;
-            this.btnShowCVV.X = 56;
+            this.btnShowCVV.X = 57;
             this.btnShowCVV.Y = 4;
             this.btnShowCVV.Visible = true;
             this.btnShowCVV.Data = "btnShowCVV";
             this.btnShowCVV.Text = "Show";
             this.btnShowCVV.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnShowCVV.IsDefault = false;
-            this.btnShowCVV.TabIndex = 9;
+            //this.btnShowCVV.TabIndex = 9;
             this.btnShowCVV.Clicked += ShowCVVButtonClicked;
             vwCard.Add(this.btnShowCVV);
             
@@ -186,7 +188,7 @@ namespace Retrowarden.Views
             this.btnCopyCVV.Text = "Copy";
             this.btnCopyCVV.TextAlignment = Terminal.Gui.TextAlignment.Centered;
             this.btnCopyCVV.IsDefault = false;
-            this.btnCopyCVV.TabIndex = 10;
+            //this.btnCopyCVV.TabIndex = 10;
             this.btnCopyCVV.Clicked += CopyCVVButtonClicked;
             vwCard.Add(this.btnCopyCVV);
             
@@ -218,7 +220,7 @@ namespace Retrowarden.Views
             this.cboExpMonth.Data = "cboExpMonth";
             this.cboExpMonth.Text = "";
             this.cboExpMonth.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.cboExpMonth.TabIndex = 11;
+            //this.cboExpMonth.TabIndex = 11;
             vwCard.Add(this.cboExpMonth);
             
             this.txtExpYear.Width = 20;
@@ -230,7 +232,8 @@ namespace Retrowarden.Views
             this.txtExpYear.Data = "txtExpYear";
             this.txtExpYear.Text = "";
             this.txtExpYear.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtExpYear.TabIndex = 12;
+            this.txtExpYear.Enter += HandleControlEnter;
+            //this.txtExpYear.TabIndex = 12;
             vwCard.Add(this.txtExpYear);
         }
     }

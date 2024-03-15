@@ -469,6 +469,25 @@ namespace Retrowarden.Views
             }
         }
         
+        private void HandleTreeviewNodeActivated(ObjectActivatedEventArgs<ITreeNode> obj)
+        {
+            // Get the node that was double-clicked.
+            ITreeNode activated = obj.ActivatedObject;
+            
+            // Get the node data for this node.
+            Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>) activated.Tag;
+            
+            // Make sure this is a leaf node.
+            if (nodeData.Item1 == NodeType.Item)
+            {
+                // Update the selected item.
+                _tempItem = _vaultItems[nodeData.Item2];
+                
+                // Call the detail form show.
+                ShowDetailForm(VaultItemDetailViewState.View);
+            }
+        }
+
         private void HandleViewItemKeypress()
         {
             // Call helper method.
@@ -636,8 +655,6 @@ namespace Retrowarden.Views
         private void HandleListviewMouseClick(MouseEventArgs obj)
         {
             int rownum = lvwItems.SelectedItem;
-            //obj.Handled = true;
-            Console.Write("Here");
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Retrowarden.Views
             this.scrMain.X = 0;
             this.scrMain.Y = 1;
             this.scrMain.Visible = true;
-            this.scrMain.ContentSize = new Size(100,108);
+            this.scrMain.ContentSize = new Size(100,120);
             this.scrMain.Data = "scrMain";
             this.scrMain.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.Add(this.scrMain);
@@ -82,9 +82,9 @@ namespace Retrowarden.Views
             this.txtItemName.Data = "txtItemName";
             this.txtItemName.Text = "";
             this.txtItemName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtItemName.TabIndex = 0;
             this.scrMain.Add(this.txtItemName);
-            
+            this.txtItemName.TabIndex = 0;
+
             this.cboFolder.Width = 30;
             this.cboFolder.Height = 2;
             this.cboFolder.X = 40;
@@ -93,8 +93,8 @@ namespace Retrowarden.Views
             this.cboFolder.Data = "cboFolder";
             this.cboFolder.Text = "";
             this.cboFolder.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.cboFolder.TabIndex = 1;
             this.scrMain.Add(this.cboFolder);
+            this.cboFolder.TabIndex = 1;
             
             this.chkFavorite.Width = 10;
             this.chkFavorite.Height = 1;
@@ -105,8 +105,8 @@ namespace Retrowarden.Views
             this.chkFavorite.Text = "Favorite";
             this.chkFavorite.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.chkFavorite.Checked = false;
-            this.chkFavorite.TabIndex = 2;
             this.scrMain.Add(this.chkFavorite);
+            this.chkFavorite.TabIndex = 2;
             
             this.fraNotes.Width = 97;
             this.fraNotes.Height = 9;
