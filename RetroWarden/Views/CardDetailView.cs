@@ -90,7 +90,7 @@ namespace Retrowarden.Views
             {
                 new CodeListItem("1", "1 - January"),
                 new CodeListItem("2", "2 - February"),
-                new CodeListItem("3", "3 - March Express"),
+                new CodeListItem("3", "3 - March"),
                 new CodeListItem("4", "4 - April"),
                 new CodeListItem("5", "5 - May"),
                 new CodeListItem("6", "6 - June"),
@@ -173,11 +173,19 @@ namespace Retrowarden.Views
 
         private void HandleControlEnter(FocusEventArgs obj)
         {
-            if (obj.View.GetType() == typeof(TextField))
+            // Get the currently focused view.
+            View view = FindFocusedControl(base.Focused);
+            
+            // Check to make sure it isn't null.
+            if (view != null)
             {
-                TextField focus = (TextField) obj.View;
-                focus.SelectAll();
-                
+                // Check to see if 
+                if (view.GetType() == typeof(TextField))
+                {
+                    // Downcast to textfield and select all text.
+                    TextField focus = (TextField)view;
+                    focus.SelectAll();
+                }
             }
         }
     }

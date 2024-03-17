@@ -66,6 +66,46 @@ namespace Retrowarden.Views
         {
             //btnSave.Enabled = false;
         }
+
+        protected View FindFocusedControl(View parent)
+        {
+            // The return value.
+            View retVal = null;
+            
+            // Check to see if this view is null.
+            if (parent != null)
+            {
+                // Check to see if this view has focus.
+                if (parent.HasFocus)
+                {
+                    // Check to see if there are sub-views.
+                    if (parent.Subviews.Count > 0)
+                    {
+                        // Loop through the sub-views.
+                        foreach (View child in parent.Subviews)
+                        {
+                            // Involution call.
+                            retVal = FindFocusedControl(child);
+                            
+                            // Check to see if we found the target.
+                            if (retVal != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        // This should be the actual control with focus.
+                        retVal = parent;
+                    }
+                }
+            }
+            
+            // Return the leaf view with focus.
+            return retVal;
+        }
         
         private void InitializeLists()
         {
@@ -148,6 +188,24 @@ namespace Retrowarden.Views
         {
             // Close dialog.
             Application.RequestStop();
+        }
+        
+        private void HandleControlEnter(FocusEventArgs obj)
+        {
+            // Get the currently focused view.
+            View view = FindFocusedControl(base.Focused);
+            
+            // Check to make sure it isn't null.
+            if (view != null)
+            {
+                // Check to see if 
+                if (view.GetType() == typeof(TextField))
+                {
+                    // Downcast to textfield and select all text.
+                    TextField focus = (TextField)view;
+                    focus.SelectAll();
+                }
+            }
         }
         #endregion
     }

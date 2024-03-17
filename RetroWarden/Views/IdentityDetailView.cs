@@ -124,6 +124,24 @@ namespace Retrowarden.Views
             // Flag that the save button was pressed.
             OkPressed = true;
         }
+        
+        private void HandleControlEnter(FocusEventArgs obj)
+        {
+            // Get the currently focused view.
+            View view = FindFocusedControl(base.Focused);
+            
+            // Check to make sure it isn't null.
+            if (view != null)
+            {
+                // Check to see if 
+                if (view.GetType() == typeof(TextField))
+                {
+                    // Downcast to textfield and select all text.
+                    TextField focus = (TextField)view;
+                    focus.SelectAll();
+                }
+            }
+        }
         #endregion
     }
 }

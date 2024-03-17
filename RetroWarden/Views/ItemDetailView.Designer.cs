@@ -82,11 +82,12 @@ namespace Retrowarden.Views
             this.txtItemName.Data = "txtItemName";
             this.txtItemName.Text = "";
             this.txtItemName.TextAlignment = Terminal.Gui.TextAlignment.Left;
+            this.txtItemName.Enter += HandleControlEnter;
             this.scrMain.Add(this.txtItemName);
             this.txtItemName.TabIndex = 0;
 
             this.cboFolder.Width = 30;
-            this.cboFolder.Height = 2;
+            this.cboFolder.Height = 5;
             this.cboFolder.X = 40;
             this.cboFolder.Y = 1;
             this.cboFolder.Visible = true;

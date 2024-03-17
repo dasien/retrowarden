@@ -75,6 +75,7 @@ namespace Retrowarden.Views
             this.txtUserName.Text = "";
             this.txtUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtUserName.TabIndex = 3;
+            txtUserName.Enter += HandleControlEnter;
             this.vwLogin.Add(this.txtUserName);
             
             this.btnCopyUserName.Width = 8;
@@ -100,6 +101,7 @@ namespace Retrowarden.Views
             this.txtPassword.Text = "";
             this.txtPassword.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtPassword.TabIndex = 5;
+            txtPassword.Enter += HandleControlEnter;
             this.vwLogin.Add(this.txtPassword);
             
             this.btnViewPassword.Width = 8;
@@ -161,6 +163,7 @@ namespace Retrowarden.Views
             this.txtTOTP.Text = "";
             this.txtTOTP.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtTOTP.TabIndex = 9;
+            txtTOTP.Enter += HandleControlEnter;
             this.vwLogin.Add(this.txtTOTP);
             
             this.fraURIList.Width = 97;

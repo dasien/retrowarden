@@ -102,7 +102,7 @@ namespace Retrowarden.Views
                     true, true, "Copy", null, TextAlignment.Centered);
                 Button btnGoURI = ViewUtils.CreateControl<Button>(40, cnt, 6, 1, 0, 0,
                     true, true, "Go", null, TextAlignment.Centered);
-                ComboBox cboMatchURI = ViewUtils.CreateControl<ComboBox>(47, cnt, 30, 2, 0, 0,
+                ComboBox cboMatchURI = ViewUtils.CreateControl<ComboBox>(47, cnt, 30, 5, 0, 0,
                     true, true, "", null);
                 Button btnDeleteURI = ViewUtils.CreateControl<Button>(78, cnt, 10, 1, 0, 0,
                     true, true, "Delete", null, TextAlignment.Centered);
@@ -329,6 +329,24 @@ namespace Retrowarden.Views
         private void NewUriButtonClicked()
         {
             throw new NotImplementedException();
+        }
+        
+        private void HandleControlEnter(FocusEventArgs obj)
+        {
+            // Get the currently focused view.
+            View view = FindFocusedControl(base.Focused);
+            
+            // Check to make sure it isn't null.
+            if (view != null)
+            {
+                // Check to see if 
+                if (view.GetType() == typeof(TextField))
+                {
+                    // Downcast to textfield and select all text.
+                    TextField focus = (TextField)view;
+                    focus.SelectAll();
+                }
+            }
         }
     }
 }

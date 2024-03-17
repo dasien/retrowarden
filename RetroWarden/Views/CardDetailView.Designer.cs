@@ -84,7 +84,7 @@ namespace Retrowarden.Views
             vwCard.Add(this.txtCardholderName);
             
             this.cboCardBrand.Width = 30;
-            this.cboCardBrand.Height = 2;
+            this.cboCardBrand.Height = 5;
             this.cboCardBrand.X = 40;
             this.cboCardBrand.Y = 1;
             this.cboCardBrand.Visible = true;
@@ -193,7 +193,7 @@ namespace Retrowarden.Views
             vwCard.Add(this.btnCopyCVV);
             
             this.lblExpMonth.Width = 4;
-            this.lblExpMonth.Height = 1;
+            this.lblExpMonth.Height = 5;
             this.lblExpMonth.X = 1;
             this.lblExpMonth.Y = 6;
             this.lblExpMonth.Visible = true;
@@ -213,7 +213,7 @@ namespace Retrowarden.Views
             vwCard.Add(this.lblExpYear);
             
             this.cboExpMonth.Width = 30;
-            this.cboExpMonth.Height = 2;
+            this.cboExpMonth.Height = 5;
             this.cboExpMonth.X = 1;
             this.cboExpMonth.Y = 7;
             this.cboExpMonth.Visible = true;
