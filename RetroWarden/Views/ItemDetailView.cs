@@ -38,13 +38,16 @@ namespace Retrowarden.Views
             InitializeLists();
             
             // Base setup what kind of view state we are in.
-            if (_viewState == VaultItemDetailViewState.View)
+            if (_viewState == VaultItemDetailViewState.View || _viewState == VaultItemDetailViewState.Edit)
             {
                 // Load controls with current data only.
                 LoadView();
                 
-                // Disable control state.
-                DisableView();
+                if (_viewState == VaultItemDetailViewState.View)
+                {
+                    // Disable control state.
+                    DisableView();
+                }
             }
         }
 
@@ -53,58 +56,15 @@ namespace Retrowarden.Views
             // Set current item values to controls.
             txtItemName.Text = _item.ItemName;
             chkFavorite.Checked = _item.IsFavorite;
-            tvwNotes.Text = _item.Notes == null ? "" : _item.Notes;
-            
-            // Set folder comboxbox source.
-            cboFolder.SetSource(_folderNames);
+            tvwNotes.Text = _item.Notes ?? "";
             
             // Set the folder to the current folder (or "No Folder" as a null default.
             cboFolder.SelectedItem = _folderNames.FindIndex(o => o.Index == _item.FolderId);
         }
 
-        protected void DisableView()
+        private void DisableView()
         {
-            //btnSave.Enabled = false;
-        }
-
-        protected View FindFocusedControl(View parent)
-        {
-            // The return value.
-            View retVal = null;
-            
-            // Check to see if this view is null.
-            if (parent != null)
-            {
-                // Check to see if this view has focus.
-                if (parent.HasFocus)
-                {
-                    // Check to see if there are sub-views.
-                    if (parent.Subviews.Count > 0)
-                    {
-                        // Loop through the sub-views.
-                        foreach (View child in parent.Subviews)
-                        {
-                            // Involution call.
-                            retVal = FindFocusedControl(child);
-                            
-                            // Check to see if we found the target.
-                            if (retVal != null)
-                            {
-                                break;
-                            }
-                        }
-                    }
-
-                    else
-                    {
-                        // This should be the actual control with focus.
-                        retVal = parent;
-                    }
-                }
-            }
-            
-            // Return the leaf view with focus.
-            return retVal;
+            btnSave.Enabled = false;
         }
         
         private void InitializeLists()
@@ -115,6 +75,9 @@ namespace Retrowarden.Views
                 // Move to a simple collection the combo box can understand.
                 _folderNames.Add(new CodeListItem(_folders[cnt].Id, _folders[cnt].Name));
             }
+            
+            // Set folder comboxbox source.
+            cboFolder.SetSource(_folderNames);
         }
 
         private void RelocateFooterControls()
@@ -139,7 +102,7 @@ namespace Retrowarden.Views
         protected virtual void UpdateItem()
         {
             // Set item properties.
-            _item.ItemName = txtItemName.Text.ToString();
+            _item.ItemName = txtItemName.Text.ToString() ?? "";
             _item.IsFavorite = chkFavorite.Checked;
             _item.Notes = tvwNotes.Text.ToString();
         }
@@ -179,33 +142,18 @@ namespace Retrowarden.Views
         }
         
         #region Event Handlers
-        protected virtual void SaveButtonClicked()
-        {
-            throw new NotImplementedException();
-        }
 
+        protected abstract void SaveButtonClicked();
+        
         private void CancelButtonClicked()
         {
             // Close dialog.
             Application.RequestStop();
         }
         
-        private void HandleControlEnter(FocusEventArgs obj)
+        protected void HandleControlEnter(View sender)
         {
-            // Get the currently focused view.
-            View view = FindFocusedControl(base.Focused);
-            
-            // Check to make sure it isn't null.
-            if (view != null)
-            {
-                // Check to see if 
-                if (view.GetType() == typeof(TextField))
-                {
-                    // Downcast to textfield and select all text.
-                    TextField focus = (TextField)view;
-                    focus.SelectAll();
-                }
-            }
+            ((TextField)sender).SelectAll();
         }
         #endregion
     }

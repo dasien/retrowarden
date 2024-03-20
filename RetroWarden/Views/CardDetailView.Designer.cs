@@ -3,7 +3,7 @@ using Terminal.Gui;
 
 namespace Retrowarden.Views 
 {
-    public partial class CardDetailView : ItemDetailView
+    public partial class CardDetailView 
     {
         private Terminal.Gui.View vwCard;
         private Terminal.Gui.Label lblCardholderName;
@@ -79,7 +79,7 @@ namespace Retrowarden.Views
             this.txtCardholderName.Data = "txtCardholderName";
             this.txtCardholderName.Text = "";
             this.txtCardholderName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCardholderName.Enter += HandleControlEnter;
+            this.txtCardholderName.Enter += (_) => HandleControlEnter(txtCardholderName);
             //this.txtCardholderName.TabIndex = 3;
             vwCard.Add(this.txtCardholderName);
             
@@ -123,7 +123,7 @@ namespace Retrowarden.Views
             this.txtCardNumber.Data = "txtCardNumber";
             this.txtCardNumber.Text = "";
             this.txtCardNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCardNumber.Enter += HandleControlEnter;
+            this.txtCardNumber.Enter += (_) => HandleControlEnter(txtCardNumber);
             //this.txtCardNumber.TabIndex = 5;
             vwCard.Add(this.txtCardNumber);
             
@@ -162,7 +162,7 @@ namespace Retrowarden.Views
             this.txtCVV.Data = "txtCVV";
             this.txtCVV.Text = "";
             this.txtCVV.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtCVV.Enter += HandleControlEnter;
+            this.txtCVV.Enter += (_) => HandleControlEnter(txtCVV);
             //this.txtCVV.TabIndex = 8;
             vwCard.Add(this.txtCVV);
             
@@ -193,7 +193,7 @@ namespace Retrowarden.Views
             vwCard.Add(this.btnCopyCVV);
             
             this.lblExpMonth.Width = 4;
-            this.lblExpMonth.Height = 5;
+            this.lblExpMonth.Height = 1;
             this.lblExpMonth.X = 1;
             this.lblExpMonth.Y = 6;
             this.lblExpMonth.Visible = true;
@@ -232,7 +232,7 @@ namespace Retrowarden.Views
             this.txtExpYear.Data = "txtExpYear";
             this.txtExpYear.Text = "";
             this.txtExpYear.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtExpYear.Enter += HandleControlEnter;
+            this.txtExpYear.Enter += (_) => HandleControlEnter(txtExpYear);
             //this.txtExpYear.TabIndex = 12;
             vwCard.Add(this.txtExpYear);
         }

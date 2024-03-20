@@ -10,6 +10,7 @@ namespace Retrowarden.Utils
         private String _response;
         private String _error;
         private String _sessionKey;
+        private String _JSONstring;
         private bool _cmdExit;
         private bool _isLoggedIn;
         private String _cmdExitCode;
@@ -93,7 +94,7 @@ namespace Retrowarden.Utils
             }
 
         }
-
+        
         public List<VaultFolder> ListFolders()
         {
             // Return object.
@@ -233,7 +234,7 @@ namespace Retrowarden.Utils
             return retVal;
         }
 
-        public VaultItem UpdateVaultItem(string encodedItem)
+        public VaultItem UpdateVaultItem(string id, string encodedItem)
         {
             // The return value.
             VaultItem retVal = null;
@@ -241,6 +242,7 @@ namespace Retrowarden.Utils
             // Add parameters for call.
             _bwcli.StartInfo.ArgumentList.Add("edit");
             _bwcli.StartInfo.ArgumentList.Add("item");
+            _bwcli.StartInfo.ArgumentList.Add(id);
             _bwcli.StartInfo.ArgumentList.Add(encodedItem);
 
             // Execute.
@@ -273,7 +275,7 @@ namespace Retrowarden.Utils
     
         }
         
-        private void ExecuteCommand()
+        private void ExecuteCommand(bool stdinUsed=false)
         {
             // Reset command flags & response.
             _cmdExit = false;
@@ -283,6 +285,14 @@ namespace Retrowarden.Utils
 
             // Execute.
             _bwcli.Start();
+            
+            // Check to see if we should be sending data in.
+            if (stdinUsed)
+            {
+                // Write JSON to stdin.
+                StreamWriter itemWriter = _bwcli.StandardInput;
+                itemWriter.Write(_JSONstring);
+            }
             _bwcli.BeginErrorReadLine();
             _bwcli.BeginOutputReadLine();
 

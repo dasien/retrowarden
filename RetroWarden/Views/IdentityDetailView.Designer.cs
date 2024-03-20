@@ -3,7 +3,7 @@ using Terminal.Gui;
 
 namespace Retrowarden.Views 
 {
-    public partial class IdentityDetailView : ItemDetailView
+    public partial class IdentityDetailView 
     {
         private Terminal.Gui.View vwIdentity;
         private Terminal.Gui.Label lblTitle;
@@ -155,7 +155,7 @@ namespace Retrowarden.Views
             this.txtFirstName.Text = "";
             this.txtFirstName.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtFirstName.TabIndex = 4;
-            this.txtFirstName.Enter += HandleControlEnter;
+            this.txtFirstName.Enter += (_) => HandleControlEnter(txtFirstName);
             vwIdentity.Add(this.txtFirstName);
             
             this.txtMiddleName.Width = 30;
@@ -167,7 +167,7 @@ namespace Retrowarden.Views
             this.txtMiddleName.Data = "txtMiddleName";
             this.txtMiddleName.Text = "";
             this.txtMiddleName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtMiddleName.Enter += HandleControlEnter;
+            this.txtMiddleName.Enter += (_) => HandleControlEnter(txtMiddleName);
             //this.txtMiddleName.TabIndex = 5;
             vwIdentity.Add(this.txtMiddleName);
             
@@ -180,7 +180,7 @@ namespace Retrowarden.Views
             this.txtLastName.Data = "txtLastName";
             this.txtLastName.Text = "";
             this.txtLastName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtLastName.Enter += HandleControlEnter;
+            this.txtLastName.Enter += (_) => HandleControlEnter(txtLastName);
             //this.txtLastName.TabIndex = 6;
             vwIdentity.Add(this.txtLastName);
             
@@ -224,7 +224,7 @@ namespace Retrowarden.Views
             this.txtSSN.Text = "";
             this.txtSSN.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtSSN.TabIndex = 7;
-            this.txtSSN.Enter += HandleControlEnter;
+            this.txtSSN.Enter += (_) => HandleControlEnter(txtSSN);
             vwIdentity.Add(this.txtSSN);
             
             this.txtPassportNumber.Width = 30;
@@ -237,7 +237,7 @@ namespace Retrowarden.Views
             this.txtPassportNumber.Text = "";
             this.txtPassportNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtPassportNumber.TabIndex = 8;
-            this.txtPassportNumber.Enter += HandleControlEnter;
+            this.txtPassportNumber.Enter += (_) => HandleControlEnter(txtPassportNumber);
             vwIdentity.Add(this.txtPassportNumber);
             
             this.txtLicenseNumber.Width = 30;
@@ -250,7 +250,7 @@ namespace Retrowarden.Views
             this.txtLicenseNumber.Text = "";
             this.txtLicenseNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtLicenseNumber.TabIndex = 9;
-            this.txtLicenseNumber.Enter += HandleControlEnter;
+            this.txtLicenseNumber.Enter += (_) => HandleControlEnter(txtLicenseNumber);
             vwIdentity.Add(this.txtLicenseNumber);
             
             this.lineView2.Width = 94;
@@ -305,7 +305,7 @@ namespace Retrowarden.Views
             this.txtAddress1.Text = "";
             this.txtAddress1.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtAddress1.TabIndex = 10;
-            this.txtAddress1.Enter += HandleControlEnter;
+            this.txtAddress1.Enter += (_) => HandleControlEnter(txtAddress1);
             vwIdentity.Add(this.txtAddress1);
             
             this.txtUserName.Width = 45;
@@ -317,7 +317,7 @@ namespace Retrowarden.Views
             this.txtUserName.Data = "txtUserName";
             this.txtUserName.Text = "";
             this.txtUserName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            txtUserName.Enter += HandleControlEnter;
+            txtUserName.Enter += (_) => HandleControlEnter(txtUserName);
             //txtUserName.TabIndex = 11;
             vwIdentity.Add(this.txtUserName);
             
@@ -351,7 +351,7 @@ namespace Retrowarden.Views
             this.txtAddress2.Text = "";
             this.txtAddress2.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtAddress2.TabIndex = 12;
-            this.txtAddress2.Enter += HandleControlEnter;
+            this.txtAddress2.Enter += (_) => HandleControlEnter(txtAddress2);
             vwIdentity.Add(this.txtAddress2);
             
             this.txtCompany.Width = 45;
@@ -364,7 +364,7 @@ namespace Retrowarden.Views
             this.txtCompany.Text = "";
             this.txtCompany.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtCompany.TabIndex = 13;
-            this.txtCompany.Enter += HandleControlEnter;
+            this.txtCompany.Enter += (_) => HandleControlEnter(txtCompany);
             vwIdentity.Add(this.txtCompany);
             
             this.lblAddress3.Width = 4;
@@ -397,7 +397,7 @@ namespace Retrowarden.Views
             this.txtAddress3.Text = "";
             this.txtAddress3.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtAddress3.TabIndex = 14;
-            this.txtAddress3.Enter += HandleControlEnter;
+            this.txtAddress3.Enter += (_) => HandleControlEnter(txtAddress3);
             vwIdentity.Add(this.txtAddress3);
             
             this.txtEmailAddress.Width = 45;
@@ -410,7 +410,7 @@ namespace Retrowarden.Views
             this.txtEmailAddress.Text = "";
             this.txtEmailAddress.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtEmailAddress.TabIndex = 15;
-            this.txtEmailAddress.Enter += HandleControlEnter;
+            this.txtEmailAddress.Enter += (_) => HandleControlEnter(txtEmailAddress);
             vwIdentity.Add(this.txtEmailAddress);
             
             this.lblCity.Width = 4;
@@ -453,7 +453,7 @@ namespace Retrowarden.Views
             this.txtCity.Text = "";
             this.txtCity.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtCity.TabIndex = 16;
-            this.txtCity.Enter += HandleControlEnter;
+            this.txtCity.Enter += (_) => HandleControlEnter(txtCity);
             vwIdentity.Add(this.txtCity);
             
             this.txtState.Width = 21;
@@ -466,7 +466,7 @@ namespace Retrowarden.Views
             this.txtState.Text = "";
             this.txtState.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtState.TabIndex = 17;
-            this.txtState.Enter += HandleControlEnter;
+            this.txtState.Enter += (_) => HandleControlEnter(txtState);
             vwIdentity.Add(this.txtState);
             
             this.txtPhoneNumber.Width = 45;
@@ -479,7 +479,7 @@ namespace Retrowarden.Views
             this.txtPhoneNumber.Text = "";
             this.txtPhoneNumber.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtPhoneNumber.TabIndex = 18;
-            this.txtPhoneNumber.Enter += HandleControlEnter;
+            this.txtPhoneNumber.Enter += (_) => HandleControlEnter(txtPhoneNumber);
             vwIdentity.Add(this.txtPhoneNumber);
             
             this.lblZipCode.Width = 4;
@@ -512,7 +512,7 @@ namespace Retrowarden.Views
             this.txtZipCode.Text = "";
             this.txtZipCode.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtZipCode.TabIndex = 19;
-            this.txtZipCode.Enter += HandleControlEnter;
+            this.txtZipCode.Enter += (_) => HandleControlEnter(txtZipCode);
             vwIdentity.Add(this.txtZipCode);
             
             this.txtCountry.Width = 21;
@@ -525,7 +525,7 @@ namespace Retrowarden.Views
             this.txtCountry.Text = "";
             this.txtCountry.TextAlignment = Terminal.Gui.TextAlignment.Left;
             //this.txtCountry.TabIndex = 20;
-            this.txtCountry.Enter += HandleControlEnter;
+            this.txtCountry.Enter += (_) => HandleControlEnter(txtCountry);
             vwIdentity.Add(this.txtCountry);
         }
     }

@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.Marshalling;
 using Terminal.Gui;
 using Retrowarden.Models;
 using Retrowarden.Utils;
@@ -31,12 +29,6 @@ namespace Retrowarden.Views
             {
                 // Load controls with current data only.
                 LoadView();
-                
-                if (_viewState == VaultItemDetailViewState.View)
-                {
-                    // Disable control state.
-                    DisableView();
-                }
             }
             
             // Set our main view to the view area of the parent view.
@@ -60,28 +52,11 @@ namespace Retrowarden.Views
                 CreateUriListRows();
             }
         }
-
-        private new void DisableView()
-        {
-            //btnSave.Enabled = false;
-            
-            // Loop through the list of URIs and disable the delete buttons.
-            
-        }
         
         private void InitializeLists()
         {
             // Create list of match types.
-            _matchDetections = new List<CodeListItem>
-            {
-                new CodeListItem("0", "Base Domain"),
-                new CodeListItem("1", "Host"),
-                new CodeListItem("2", "Starts With"),
-                new CodeListItem("3", "Regular Expression"),
-                new CodeListItem("4", "Exact Match"),
-                new CodeListItem("5", "Never"),
-                new CodeListItem(null, "Default")
-            };
+            _matchDetections = CodeListManager.GetInstance().GetList("MatchDetections");
         }
         
         private void CreateUriListRows()
@@ -246,8 +221,11 @@ namespace Retrowarden.Views
 
         protected override void UpdateItem()
         {
-            // Call base method.
-            base.UpdateItem();
+            // Check to see if the sub object is null (create mode).
+            if (_item.Login == null)
+            {
+                _item.Login = new Login();
+            }
             
             // Set item properties.
             _item.Login.UserName = txtUserName.Text.ToString();
@@ -256,6 +234,9 @@ namespace Retrowarden.Views
 
             // Update the URI list.
             UpdateItemUriList();
+            
+            // Call base method.
+            base.UpdateItem();
         }
         
         public void Show()
@@ -329,24 +310,6 @@ namespace Retrowarden.Views
         private void NewUriButtonClicked()
         {
             throw new NotImplementedException();
-        }
-        
-        private void HandleControlEnter(FocusEventArgs obj)
-        {
-            // Get the currently focused view.
-            View view = FindFocusedControl(base.Focused);
-            
-            // Check to make sure it isn't null.
-            if (view != null)
-            {
-                // Check to see if 
-                if (view.GetType() == typeof(TextField))
-                {
-                    // Downcast to textfield and select all text.
-                    TextField focus = (TextField)view;
-                    focus.SelectAll();
-                }
-            }
         }
     }
 }

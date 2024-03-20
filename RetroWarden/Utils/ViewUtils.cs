@@ -1,3 +1,4 @@
+using System.Text;
 using Terminal.Gui;
 using Retrowarden.Models;
 using Terminal.Gui.Trees;
@@ -196,6 +197,24 @@ namespace Retrowarden.Utils
             retVal.Children.Add(notes);
 
             // Return tree.
+            return retVal;
+        }
+        
+        public static StringBuilder CreateAboutMessageAscii()
+        {
+            StringBuilder retVal = new StringBuilder();
+            
+            // Create ascii art.
+            retVal.AppendLine (@" ******************               A terminal.gui based client for Bitwarden");
+            retVal.AppendLine (@" ********       #**     ");			
+            retVal.AppendLine (@" ********       #**     ______     _                                  _            ");
+            retVal.AppendLine (@" ********       #**     | ___ \   | |                                | |           ");
+            retVal.AppendLine (@" ********       ***     | |_/ /___| |_ _ __ _____      ____ _ _ __ __| | ___ _ __  ");
+            retVal.AppendLine (@"  *******     ****      |    // _ \ __| '__/ _ \ \ /\ / / _` | '__/ _` |/ _ \ '_ \ ");
+            retVal.AppendLine (@"   ******   ****        | |\ \  __/ |_| | | (_) \ V  V / (_| | | | (_| |  __/ | | |");
+            retVal.AppendLine (@"    **********          \_| \_\___|\__|_|  \___/ \_/\_/ \__,_|_|  \__,_|\___|_| |_|");
+            retVal.AppendLine (@"       ****             ");
+
             return retVal;
         }
     }

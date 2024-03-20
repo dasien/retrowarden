@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Retrowarden.Models
 {
-    public class Card 
+    public class Card :VaultItem
     {
         [JsonProperty("cardholderName")]
         public string? CardholderName { get; set; }

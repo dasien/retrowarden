@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices.Marshalling;
+
 using Terminal.Gui;
 using Retrowarden.Models;
 using Retrowarden.Utils;
@@ -28,12 +27,6 @@ namespace Retrowarden.Views
             {
                 // Load controls with current data only.
                 LoadView();
-                
-                if (_viewState == VaultItemDetailViewState.View)
-                {
-                    // Disable control state.
-                    DisableView();
-                }
             }
             
             // Set our main view to the view area of the parent view.
@@ -64,39 +57,27 @@ namespace Retrowarden.Views
             txtZipCode.Text = _item.Identity.PostalCode ?? "";
             txtCountry.Text = _item.Identity.Country ?? "";
             
-            // Load titles combo box.
-            cboTitle.SetSource(_titles);
-            
             // Set combo box default values.
             cboTitle.SelectedItem = _titles.FindIndex(o => o.Index == _item.Identity.Title);
-
-            
-
         }
-
-        private new void DisableView()
-        {
-            //btnSave.Enabled = false;
-            
-            // Loop through the list of URIs and disable the delete buttons.
-            
-        }
-
+        
         private void InitializeLists()
         {
-            // Create new list.
-            _titles = new List<CodeListItem>
-            {
-                new CodeListItem("Mr", "Mr"),
-                new CodeListItem("Mrs", "Mrs"),
-                new CodeListItem("Ms", "Ms"),
-                new CodeListItem("Mx", "Mx"),
-                new CodeListItem("Dr", "Dr")
-            };
+            // Load list.
+            _titles = CodeListManager.GetInstance().GetList("Titles");
+            
+            // Load titles combo box.
+            cboTitle.SetSource(_titles);
         }
 
         protected override void UpdateItem()
         {
+            // Check to see if the sub object is null (create mode).
+            if (_item.Identity == null)
+            {
+                _item.Identity = new Identity();
+            }
+
             // Call base method.
             base.UpdateItem();
             
@@ -104,7 +85,7 @@ namespace Retrowarden.Views
         }
         
         #region Event Handlers
-        private void SaveButtonClicked()
+        protected override void SaveButtonClicked()
         {
             // Perform validations on item data.
 
@@ -123,24 +104,6 @@ namespace Retrowarden.Views
 
             // Flag that the save button was pressed.
             OkPressed = true;
-        }
-        
-        private void HandleControlEnter(FocusEventArgs obj)
-        {
-            // Get the currently focused view.
-            View view = FindFocusedControl(base.Focused);
-            
-            // Check to make sure it isn't null.
-            if (view != null)
-            {
-                // Check to see if 
-                if (view.GetType() == typeof(TextField))
-                {
-                    // Downcast to textfield and select all text.
-                    TextField focus = (TextField)view;
-                    focus.SelectAll();
-                }
-            }
         }
         #endregion
     }

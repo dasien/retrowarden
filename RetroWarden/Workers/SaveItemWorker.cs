@@ -14,6 +14,9 @@ namespace Retrowarden.Workers
             // Store items list.
             _items = items;
             
+            // Work results.
+            _results = new List<VaultItem>();
+            
             // Check to see what kind of action we are performing.
             switch (action)
             {
@@ -63,6 +66,9 @@ namespace Retrowarden.Workers
 
         private void HandleItemEdit()
         {
+            // In this case, we may have multiple actions.
+            _worker.WorkerReportsProgress = true;
+            
             _worker.DoWork += (s, e) =>
             {
                 // Loop through items (should be only one in this case.
@@ -75,7 +81,7 @@ namespace Retrowarden.Workers
                     string encodedItem = item.ToBase64EncodedString();
 
                     // Execute the edit method.
-                    _results.Add(_vaultProxy.UpdateVaultItem(encodedItem));
+                    _results.Add(_vaultProxy.UpdateVaultItem(item.Id, encodedItem));
                     
                     // Update progress.
                     _worker.ReportProgress(cnt + 1);

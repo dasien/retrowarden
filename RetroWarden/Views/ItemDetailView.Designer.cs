@@ -82,7 +82,7 @@ namespace Retrowarden.Views
             this.txtItemName.Data = "txtItemName";
             this.txtItemName.Text = "";
             this.txtItemName.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.txtItemName.Enter += HandleControlEnter;
+            this.txtItemName.Enter += (_) => HandleControlEnter(txtItemName);
             this.scrMain.Add(this.txtItemName);
             this.txtItemName.TabIndex = 0;
 

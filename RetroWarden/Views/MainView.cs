@@ -29,7 +29,7 @@ namespace Retrowarden.Views
             Application.Init();
             
             // Create about message.
-            CreateAboutMessageAscii();
+            _aboutMessage = ViewUtils.CreateAboutMessageAscii();
             
             // Load the configuration file.
             ConfigurationManager manager = ConfigurationManager.Instance;
@@ -101,23 +101,12 @@ namespace Retrowarden.Views
             return false;
         }
         
-        private void CreateAboutMessageAscii()
-        {
-            _aboutMessage = new StringBuilder();
-            _aboutMessage.AppendLine (@" ******************               A terminal.gui based client for Bitwarden");
-            _aboutMessage.AppendLine (@" ********       #**     ");			
-            _aboutMessage.AppendLine (@" ********       #**     ______     _                                  _            ");
-            _aboutMessage.AppendLine (@" ********       #**     | ___ \   | |                                | |           ");
-            _aboutMessage.AppendLine (@" ********       ***     | |_/ /___| |_ _ __ _____      ____ _ _ __ __| | ___ _ __  ");
-            _aboutMessage.AppendLine (@"  *******     ****      |    // _ \ __| '__/ _ \ \ /\ / / _` | '__/ _` |/ _ \ '_ \ ");
-            _aboutMessage.AppendLine (@"   ******   ****        | |\ \  __/ |_| | | (_) \ V  V / (_| | | | (_| |  __/ | | |");
-            _aboutMessage.AppendLine (@"    **********          \_| \_\___|\__|_|  \___/ \_/\_/ \__,_|_|  \__,_|\___|_| |_|");
-            _aboutMessage.AppendLine (@"       ****             "); 
-        }
-
         #region UI Control Helpers
         private void LoadItemListView(SortedDictionary<string, VaultItem> items)
         {
+            // Clear out any existing items.
+            lvwItems.RemoveAll();
+            
             // Get list of vault items from dictionary.
             List<VaultItem> itemList = items.Values.ToList();
             
@@ -134,6 +123,9 @@ namespace Retrowarden.Views
         }
         private void LoadTreeView()
         {
+            // Clear out any items.
+            tvwItems.RemoveAll();
+            
             // Create root node.
             TreeNode root = new TreeNode("Bitwarden");
             root.Tag = new Tuple<NodeType, string>(NodeType.Root, null);
@@ -379,7 +371,7 @@ namespace Retrowarden.Views
         }
         #endregion
         
-        #region Event Handlers
+        #region Top Menu Handlers
         private void HandleConnectionRequest()
         {
             // Check to make sure we are not logged in already.
@@ -450,6 +442,20 @@ namespace Retrowarden.Views
             }
         }
 
+        private void HandleBoomerMode()
+        {
+            // Toggle boomer mode.
+            _boomerMode = !_boomerMode;
+            
+            // Set menu state.
+            mnuMain.Menus[1].Children[0].Checked = _boomerMode;
+            
+            // Set this to the desired state
+            Application.IsMouseDisabled = _boomerMode;
+        }
+        #endregion
+
+        #region Treeview Event Handlers
        private void HandleTreeviewSelectionChanged(object? sender, SelectionChangedEventArgs<ITreeNode> e)
         {
             // Get node that was selected.
@@ -484,10 +490,92 @@ namespace Retrowarden.Views
                 _tempItem = _vaultItems[nodeData.Item2];
                 
                 // Call the detail form show.
-                ShowDetailForm(VaultItemDetailViewState.View);
+                ShowDetailForm(VaultItemDetailViewState.Edit);
             }
         }
+        #endregion
+        
+        #region Statusbar Menu Handlers
+                private void HandleCreateKeypress()
+        { 
+            // Create new temp item.
+            _tempItem = new VaultItem();
+                
+            // Try to establish context from the tree view.
+            if (tvwItems.SelectedObject != null)
+            {
+                // Get the node which is selected.
+                ITreeNode node = tvwItems.SelectedObject;
 
+                // Check the node type from tag.
+                Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>)node.Tag;
+
+                // Check to see if it is an item group.
+                if (nodeData.Item1 == NodeType.ItemGroup)
+                {
+                    // Based on the string we know what type of item to create.
+                    switch (node.Text)
+                    {
+                        case "Logins":
+                            _tempItem.ItemType = 1;
+                            break;
+                        case "Secure Notes":
+                            _tempItem.ItemType = 2;
+                            break;
+                        case "Cards":
+                            _tempItem.ItemType = 3;
+                            break;
+                        case "Identites":
+                            _tempItem.ItemType = 4;
+                            break;
+                    }
+                }
+
+                else if (nodeData.Item1 == NodeType.Item)
+                {
+                    // Get item.
+                    _tempItem = _vaultItems[nodeData.Item2];
+                }
+
+                else
+                {
+                    // Have the user pick the item type.
+                    SelectItemTypeDialog dialog = new SelectItemTypeDialog();
+                    dialog.Show();
+
+                    if (dialog.OkPressed)
+                    {
+                        _tempItem.ItemType = dialog.ItemType + 1;
+                    }
+
+                    else
+                    {
+                        // Just default to Login.
+                        _tempItem.ItemType = 1;
+                    }
+                }
+            }
+            
+            else
+            {
+                // Have the user pick the item type.
+                SelectItemTypeDialog dialog = new SelectItemTypeDialog();
+                dialog.Show();
+
+                if (dialog.OkPressed)
+                {
+                    _tempItem.ItemType = dialog.ItemType + 1;
+                }
+
+                else
+                {
+                    // Just default to Login.
+                    _tempItem.ItemType = 1;
+                }
+            }
+            
+            ShowDetailForm(VaultItemDetailViewState.Create);
+        }
         private void HandleViewItemKeypress()
         {
             // Call helper method.
@@ -567,20 +655,9 @@ namespace Retrowarden.Views
                 // Uncheck current selected rows.
             }
         }
-        
-        private void HandleBoomerMode()
-        {
-            // Toggle boomer mode.
-            _boomerMode = !_boomerMode;
-            
-            // Set menu state.
-            mnuMain.Menus[1].Children[0].Checked = _boomerMode;
-            
-            // Set this to the desired state
-            Application.IsMouseDisabled = _boomerMode;
-        }
         #endregion
 
+        #region Listview Event Handlers
         private void HandleListViewSelectedItemChanged(ListViewItemEventArgs obj)
         {
             // Hold a temp reference to current item.
@@ -646,15 +723,11 @@ namespace Retrowarden.Views
             // Set the first row as the selected row.
             lvwItems.SelectedItem = 0;
         }
-
-        private void HandleCreateKeypress()
-        {
-            ShowDetailForm(VaultItemDetailViewState.Create);
-        }
-
+        
         private void HandleListviewMouseClick(MouseEventArgs obj)
         {
             int rownum = lvwItems.SelectedItem;
         }
+        #endregion
     }
 }

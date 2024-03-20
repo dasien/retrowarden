@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Retrowarden.Models
 {
-    public class Login
+    public class Login : VaultItem
     {
         [JsonProperty("username")]
         public string? UserName { get; set; }

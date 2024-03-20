@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices.Marshalling;
+
 using Terminal.Gui;
 using Retrowarden.Models;
 using Retrowarden.Utils;
@@ -20,18 +19,21 @@ namespace Retrowarden.Views
         private void SetupView()
         {
             // Base setup what kind of view state we are in.
-            if (_viewState == VaultItemDetailViewState.View)
+            if (_viewState == VaultItemDetailViewState.View || _viewState == VaultItemDetailViewState.Edit)
             {
                 // Load controls with current data only.
                 LoadView();
-                
-                // Disable control state.
-                DisableView();
             }
+            
+            // Set our main view to the view area of the parent view.
+            //base.DetailView = vwCard;
+
+            // Setup common view parts.
+            base.SetupView();
         }
         
         #region Event Handlers
-        private void SaveButtonClicked()
+        protected override void SaveButtonClicked()
         {
             // Perform validations on item data.
 
