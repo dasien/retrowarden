@@ -222,10 +222,7 @@ namespace Retrowarden.Views
         protected override void UpdateItem()
         {
             // Check to see if the sub object is null (create mode).
-            if (_item.Login == null)
-            {
-                _item.Login = new Login();
-            }
+            _item.Login ??= new Login();
             
             // Set item properties.
             _item.Login.UserName = txtUserName.Text.ToString();

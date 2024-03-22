@@ -7,17 +7,24 @@ namespace Retrowarden.Utils
     public class ItemListDataSource : IListDataSource
     {
         // Member variables.
-        readonly int _nameColumnWidth = 30;
-        private readonly int _userIdColumnWidth = 30;
+        private const int NameColumnWidth = 30;
+        private const int UserIdColumnWidth = 30;
         private int _count;
         private int _maxLength;
         private List<VaultItem> _items;
         private BitArray _markedRows;
         
+        // This event helps identify when a row is marked or unmarked by a mouse click, because the 
+        // SelectedItemChanged event on the listview doesn't fire in that case.
+        public event EventHandler? OnSetMark;
+        
         public ItemListDataSource(List<VaultItem> items)
         {
             // Set item list and associated values.
-            ItemList = items;
+            _count = items.Count;
+            _markedRows = new BitArray (_count);
+            _items = items;
+            _maxLength = GetMaxLengthItem ();
         }
         
         public void Render(ListView container, ConsoleDriver driver, bool selected, int item, int col, int line, int width,
@@ -25,8 +32,8 @@ namespace Retrowarden.Utils
         {
             container.Move (col, line);
             
-            string itemName = String.Format (String.Format ("{{0,{0}}}", -_nameColumnWidth), _items [item].ItemName);
-            string userId = String.Format (String.Format ("{{0,{0}}}", -_userIdColumnWidth), 
+            string itemName = String.Format (String.Format ("{{0,{0}}}", -NameColumnWidth), _items [item].ItemName);
+            string userId = String.Format (String.Format ("{{0,{0}}}", -UserIdColumnWidth), 
                 _items[item].Login == null ? " " : _items[item].Login.UserName);
             
             RenderUstr (driver, $"{itemName} {userId} {_items[item].ItemOwnerName}", col, line, width, start);}
@@ -48,6 +55,9 @@ namespace Retrowarden.Utils
             if (item >= 0 && item < _count)
             {
                 _markedRows [item] = value;
+                
+                // Raise marked event.
+                OnSetMark?.Invoke(this, EventArgs.Empty);
             } 
         }
         public IList ToList()
@@ -56,7 +66,8 @@ namespace Retrowarden.Utils
         }
         
         #region Private Methods
-        int GetMaxLengthItem ()
+
+        private int GetMaxLengthItem ()
         {
             int retVal = 0;
 
@@ -64,8 +75,8 @@ namespace Retrowarden.Utils
             {
                 for (int cnt = 0; cnt < _items.Count; cnt++)
                 {
-                    var col1 = String.Format(String.Format("{{0,{0}}}", -_nameColumnWidth), _items[cnt].ItemName);
-                    var col2 = String.Format(String.Format("{{0,{0}}}", -_userIdColumnWidth), 
+                    var col1 = String.Format(String.Format("{{0,{0}}}", -NameColumnWidth), _items[cnt].ItemName);
+                    var col2 = String.Format(String.Format("{{0,{0}}}", -UserIdColumnWidth), 
                         _items[cnt].Login == null ? " " : _items[cnt].Login.UserName);
 
                     var sc = $"{col1}  {col2} {_items[cnt].ItemOwnerName}";
@@ -84,16 +95,18 @@ namespace Retrowarden.Utils
         {
             int used = 0;
             int index = start;
-            while (index < ustr.Length) {
-                (var rune, var size) = Utf8.DecodeRune (ustr, index, index - ustr.Length);
-                var count = Rune.ColumnWidth (rune);
+            while (index < ustr.Length) 
+            {
+                (uint rune, int size) = Utf8.DecodeRune (ustr, index, index - ustr.Length);
+                int count = Rune.ColumnWidth (rune);
                 if (used + count >= width) break;
                 driver.AddRune (rune);
                 used += count;
                 index += size;
             }
 
-            while (used < width) {
+            while (used < width)
+            {
                 driver.AddRune (' ');
                 used++;
             }
@@ -108,6 +121,24 @@ namespace Retrowarden.Utils
             }
         }
 
+        public int MarkedItemCount
+        {
+            get
+            {
+                int retVal = 0;
+                
+                // Count items.
+                foreach (bool bit in _markedRows)
+                {
+                    if (bit)
+                    {
+                        retVal++;
+                    }
+                }
+
+                return retVal;
+            }
+        }
         public int Length
         {
             get
@@ -131,6 +162,26 @@ namespace Retrowarden.Utils
                     _items = value;
                     _maxLength = GetMaxLengthItem ();
                 }
+            }
+        }
+
+        public List<VaultItem> MarkedItemList
+        {
+            get
+            {
+                List<VaultItem> retVal = new List<VaultItem>();
+                
+                // Loop through marked items.
+                for (int cnt = 0; cnt < _markedRows.Count; cnt++)
+                {
+                    if (_markedRows[cnt])
+                    {
+                        // Add the item to the return list.
+                        retVal.Add(_items[cnt]);
+                    }
+                }
+
+                return retVal;
             }
         }
         #endregion

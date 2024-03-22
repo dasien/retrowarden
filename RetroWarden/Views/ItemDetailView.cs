@@ -26,28 +26,55 @@ namespace Retrowarden.Views
             InitializeComponent();
         }
         
+        public void Show()
+        {
+            Application.Run(this);
+        }
+
         protected void SetupView()
         {
-            // Add subview to view.
-            scrMain.Add(_subView);
-            
-            // Update location of 'footer' controls to below the particular detail view.
-            RelocateFooterControls();
-            
+            // Check to make sure we have a sub-view to add (Secure Note doesn't have one)
+            if (_subView != null)
+            {
+                // Add subview to view.
+                scrMain.Add(_subView);
+
+                // Update location of 'footer' controls to below the particular detail view.
+                RelocateFooterControls();
+            }
+
             // Initialize any list controls.
             InitializeLists();
             
-            // Base setup what kind of view state we are in.
-            if (_viewState == VaultItemDetailViewState.View || _viewState == VaultItemDetailViewState.Edit)
+            // Load form based on action.
+            switch (_viewState)
             {
-                // Load controls with current data only.
-                LoadView();
-                
-                if (_viewState == VaultItemDetailViewState.View)
-                {
+                case VaultItemDetailViewState.Create:
+                    
+                    // Set title.
+                    this.Title = "Create New Item";
+                    break;
+
+                case VaultItemDetailViewState.Edit:
+                    
+                    // Load controls with current data only.
+                    LoadView();
+                    
+                    // Set title.
+                    this.Title = "Edit Item - " + _item.ItemName;
+                    break;
+
+                case VaultItemDetailViewState.View:
+                    
+                    // Load controls with current data only.
+                    LoadView();
+                    
                     // Disable control state.
                     DisableView();
-                }
+                    
+                    // Set title.
+                    this.Title = "View Item - " + _item.ItemName;
+                    break;
             }
         }
 
@@ -70,26 +97,18 @@ namespace Retrowarden.Views
         private void InitializeLists()
         {
             // Load combobox.
-            for (int cnt = 0; cnt < _folders.Count; cnt++)
+            foreach (VaultFolder folder in _folders)
             {
                 // Move to a simple collection the combo box can understand.
-                _folderNames.Add(new CodeListItem(_folders[cnt].Id, _folders[cnt].Name));
+                _folderNames.Add(new CodeListItem(folder.Id, folder.Name));
             }
-            
+
             // Set folder comboxbox source.
             cboFolder.SetSource(_folderNames);
         }
 
         private void RelocateFooterControls()
         {
-            // Get the tab indexes for the subview.
-            //int maxTabStop = _subView.TabIndexes.Last().TabIndex;
-            
-            // Set the tab indexes of the notes view and buttons to be higher than the max from subview.
-            //tvwNotes.TabIndex = maxTabStop + 1;
-            //btnSave.TabIndex = tvwNotes.TabIndex + 1;
-            //btnCancel.TabIndex = btnSave.TabIndex + 1;
-
             // Update Y of the notes frame to detail view bottom + 2
             fraNotes.Y = Pos.Bottom(_subView) + 2;
             
@@ -107,11 +126,7 @@ namespace Retrowarden.Views
             _item.Notes = tvwNotes.Text.ToString();
         }
         
-        public void Show()
-        {
-            Application.Run(this);
-        }
-        
+        #region  Properties
         public bool OkPressed
         {
             get { return _okPressed; }
@@ -130,19 +145,11 @@ namespace Retrowarden.Views
 
         protected View DetailView
         {
-            get 
-            {
-                return _subView;
-            }
-
-            set
-            {
-                _subView = value;
-            }
+            set { _subView = value; }
         }
+        #endregion
         
         #region Event Handlers
-
         protected abstract void SaveButtonClicked();
         
         private void CancelButtonClicked()

@@ -65,10 +65,7 @@ namespace Retrowarden.Views
         protected override void UpdateItem()
         {
             // Check to see if the sub object is null (create mode).
-            if (_item.Card == null)
-            {
-                _item.Card = new Card();
-            }
+            _item.Card ??= new Card();
             
             // Set values.
             _item.Card.CardholderName =  txtCardholderName.Text.ToString() ?? "";

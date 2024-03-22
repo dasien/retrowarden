@@ -8,6 +8,7 @@ namespace Retrowarden.Views
     public partial class IdentityDetailView : ItemDetailView
     {
         private List<CodeListItem> _titles;
+        
         public IdentityDetailView(VaultItem item, List<VaultFolder> folders, VaultItemDetailViewState state) 
             : base (item, folders, state)
         {
@@ -73,37 +74,52 @@ namespace Retrowarden.Views
         protected override void UpdateItem()
         {
             // Check to see if the sub object is null (create mode).
-            if (_item.Identity == null)
-            {
-                _item.Identity = new Identity();
-            }
+            _item.Identity ??= new Identity();
 
+            // Set values.
+            _item.Identity.FirstName =  txtFirstName.Text.ToString() ?? "";
+            _item.Identity.MiddleName = txtMiddleName.Text.ToString() ?? "";
+            _item.Identity.LastName = txtLastName.Text.ToString() ?? "";
+            _item.Identity.UserName = txtUserName.Text.ToString() ?? "";
+            _item.Identity.Company = txtCompany.Text.ToString() ?? "";
+            _item.Identity.Ssn = txtSSN.Text.ToString() ?? "";
+            _item.Identity.PassportNumber = txtPassportNumber.Text.ToString() ?? "";
+            _item.Identity.LicenseNumber = txtLicenseNumber.Text.ToString() ?? "";
+            _item.Identity.Email = txtEmailAddress.Text.ToString() ?? "";
+            _item.Identity.Phone = txtPhoneNumber.Text.ToString() ?? "";
+            _item.Identity.Address1 = txtAddress1.Text.ToString() ?? "";
+            _item.Identity.Address2 = txtAddress2.Text.ToString() ?? "";
+            _item.Identity.Address3 = txtAddress3.Text.ToString() ?? "";
+            _item.Identity.City = txtCity.Text.ToString() ?? "";
+            _item.Identity.State = txtState.Text.ToString() ?? "";
+            _item.Identity.PostalCode = txtZipCode.Text.ToString() ?? "";
+            _item.Identity.Country = txtCountry.Text.ToString() ?? "";
+            _item.Identity.Title = _titles.ElementAt(cboTitle.SelectedItem).Index;
+            
             // Call base method.
             base.UpdateItem();
-            
-            // Save any additional properties.
         }
         
         #region Event Handlers
         protected override void SaveButtonClicked()
         {
-            // Perform validations on item data.
-
-            // Update item to current control values.
-            UpdateItem();
-
-            // Check to see which save mode we are in.
-            switch (_viewState)
+            // Check to see that an item name is present (it is required).
+            if (ItemName.Text == null)
             {
-                case VaultItemDetailViewState.Create:
-                    break;
-
-                case VaultItemDetailViewState.Edit:
-                    break;
+                MessageBox.ErrorQuery("Action failed.", "Item name must have a value.", "Ok");
             }
 
-            // Flag that the save button was pressed.
-            OkPressed = true;
+            else
+            {
+                // Update item to current control values.
+                UpdateItem();
+                
+                // Indicate Save was pressed.
+                base.OkPressed = true;
+                
+                // Close dialog.
+                Application.RequestStop();
+            }
         }
         #endregion
     }

@@ -17,7 +17,7 @@ namespace Retrowarden.Views
         private Terminal.Gui.ListView lvwItems;
         private Terminal.Gui.MenuBar mnuMain;
         private Terminal.Gui.StatusBar staMain;
-        private Terminal.Gui.StatusItem stiHelp;
+        private Terminal.Gui.StatusItem stiNew;
         private Terminal.Gui.StatusItem stiView;
         private Terminal.Gui.StatusItem stiEdit; 
         private Terminal.Gui.StatusItem stiCopyUser;
@@ -67,7 +67,7 @@ namespace Retrowarden.Views
             this.Add(this.winMain);
             
             this.fraItems.Width = 31;
-            this.fraItems.Height = 27;
+            this.fraItems.Height = 26;
             this.fraItems.X = 0;
             this.fraItems.Y = 1;
             this.fraItems.Visible = true;
@@ -81,10 +81,11 @@ namespace Retrowarden.Views
             this.winMain.Add(this.fraItems);
             
             this.tvwItems.Width = 29;
-            this.tvwItems.Height = 26;
+            this.tvwItems.Height = 25;
             this.tvwItems.X = 0;
             this.tvwItems.Y = 0;
             this.tvwItems.Visible = true;
+            this.tvwItems.Enabled = false;
             this.tvwItems.Data = "tvwItems";
             this.tvwItems.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.tvwItems.Style.CollapseableSymbol = '-';
@@ -94,11 +95,11 @@ namespace Retrowarden.Views
             this.tvwItems.Style.LeaveLastRow = false;
             this.tvwItems.Style.ShowBranchLines = true;
             this.tvwItems.SelectionChanged += HandleTreeviewSelectionChanged;
-            tvwItems.ObjectActivated += HandleTreeviewNodeActivated;
+            this.tvwItems.ObjectActivated += HandleTreeviewNodeActivated;
             this.fraItems.Add(this.tvwItems);
             
             this.fraVault.Width = 86;
-            this.fraVault.Height = 27;
+            this.fraVault.Height = 26;
             this.fraVault.X = 31;
             this.fraVault.Y = 1;
             this.fraVault.Visible = true;
@@ -143,14 +144,12 @@ namespace Retrowarden.Views
             this.lvwItems.X = 0;
             this.lvwItems.Y = 1;
             this.lvwItems.Visible = true;
+            this.lvwItems.Enabled = false;
             this.lvwItems.TextAlignment = Terminal.Gui.TextAlignment.Left;
             this.lvwItems.AllowsMultipleSelection = true;
             this.lvwItems.AllowsMarking = true;
-            this.lvwItems.SelectedItemChanged += HandleListViewSelectedItemChanged;
-            this.lvwItems.KeyPress += HandleListViewKeyUp;
             this.lvwItems.OpenSelectedItem += HandleListViewOpenItem;
-            this.lvwItems.Enter += HandleListviewEnter;
-            this.lvwItems.MouseClick += HandleListviewMouseClick;
+            this.lvwItems.SelectedItemChanged += HandleListViewSelectedItemChanged;
             this.fraVault.Add(lvwItems);
             
             this.mnuMain = new MenuBar(new MenuBarItem[]
@@ -193,11 +192,10 @@ namespace Retrowarden.Views
             this.staMain.Data = "staMain";
             this.staMain.Text = "";
             this.staMain.TextAlignment = Terminal.Gui.TextAlignment.Left;
-            this.stiHelp = new Terminal.Gui.StatusItem(((Terminal.Gui.Key)(1048588u)), "~F1~ New", HandleCreateKeypress);
-            this.staMain.Items = new Terminal.Gui.StatusItem[] {
-                    this.stiHelp};
+            this.staMain.Items = new Terminal.Gui.StatusItem[]{};
             
             // Create new status bar items.  These will get added as context functions when items are selected.
+            this.stiNew = new StatusItem(Key.F1, "~F1~ New", HandleCreateKeypress);
             stiView = new StatusItem(Key.F2, "~F2~ View", HandleViewItemKeypress);
             stiEdit = new StatusItem(Key.F3, "~F3~ Edit", HandleEditItemKeypress);
             stiCopyUser = new StatusItem(Key.F4, "~F4~ Copy UserName", HandleUserCopyKeypress);

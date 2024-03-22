@@ -11,7 +11,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Terminal.Gui" Version="1.15.1" />
+      <PackageReference Include="Terminal.Gui" Version="1.16.0" />
     </ItemGroup>
 
     <ItemGroup>

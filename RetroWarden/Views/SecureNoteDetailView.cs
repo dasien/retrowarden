@@ -16,7 +16,7 @@ namespace Retrowarden.Views
             SetupView();
         }
         
-        private void SetupView()
+        private new void SetupView()
         {
             // Base setup what kind of view state we are in.
             if (_viewState == VaultItemDetailViewState.View || _viewState == VaultItemDetailViewState.Edit)
@@ -25,33 +25,37 @@ namespace Retrowarden.Views
                 LoadView();
             }
             
-            // Set our main view to the view area of the parent view.
-            //base.DetailView = vwCard;
+            // Create an empty view so that the base view can resize.
+            View empty = new View(new Rect(1, 3, 1, 1));
 
+            // Set to base.
+            base.DetailView = empty;
+            
             // Setup common view parts.
             base.SetupView();
         }
         
         #region Event Handlers
+
         protected override void SaveButtonClicked()
         {
-            // Perform validations on item data.
-
-            // Update item to current control values.
-            base.UpdateItem();
-
-            // Check to see which save mode we are in.
-            switch (_viewState)
+            // Check to see that an item name is present (it is required).
+            if (ItemName.Text == null)
             {
-                case VaultItemDetailViewState.Create:
-                    break;
-
-                case VaultItemDetailViewState.Edit:
-                    break;
+                MessageBox.ErrorQuery("Action failed.", "Item name must have a value.", "Ok");
             }
 
-            // Flag that the save button was pressed.
-            OkPressed = true;
+            else
+            {
+                // Update item to current control values.
+                UpdateItem();
+
+                // Indicate Save was pressed.
+                base.OkPressed = true;
+
+                // Close dialog.
+                Application.RequestStop();
+            }
         }
         #endregion
     }

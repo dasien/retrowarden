@@ -17,7 +17,6 @@ namespace Retrowarden.Views
         private List<VaultFolder> _folders;
         private List<VaultCollection> _collections;
         private List<Organization> _organizations;
-        private readonly List<string> _selectedRows;
         private StringBuilder _aboutMessage;
         private VaultItem _tempItem;
         private bool _splashShown;
@@ -75,9 +74,6 @@ namespace Retrowarden.Views
             // Initialize vault proxy.
             _vaultProxy = new VaultProxy(manager.GetConfig().CLILocation);
             
-            // Initialize selected rows list.
-            _selectedRows = new List<string>();
-            
             // Setup screen controls.
             InitializeComponent();
             
@@ -113,6 +109,9 @@ namespace Retrowarden.Views
             // Create list data source for listview.
             ItemListDataSource listSource = new ItemListDataSource(itemList);
             
+            // Create handler for the OnSetMark event.
+            listSource.OnSetMark += HandleListviewItemMarked;
+            
             // Set the data to the listview.
             lvwItems.Source = (listSource);
             
@@ -120,6 +119,13 @@ namespace Retrowarden.Views
             lblItemName.Visible = true;
             lblUserId.Visible = true;
             lblOwner.Visible = true;
+            
+            // Set the first row as the selected row.
+            lvwItems.SelectedItem = 0;
+            lvwItems.SetFocus();
+            
+            // Set statusbar menus.
+            UpdateStatusBarOptions();
         }
         private void LoadTreeView()
         {
@@ -194,49 +200,8 @@ namespace Retrowarden.Views
         
         private void ShowDetailForm(VaultItemDetailViewState state)
         {
-            ItemDetailView view = null;
+            ItemDetailView view = CreateDetailView(state);
             
-            // Check to see what type of item we have.
-            switch (_tempItem.ItemType)
-            {
-                // Login
-                case 1:
-                    // Create item detail dialog.
-                    view = new LoginDetailView(_tempItem, _folders, state);
-                    break;
-                
-                // Note
-                case 2:
-                    view = new SecureNoteDetailView(_tempItem, _folders, state);
-                    break;
-                
-                // Card
-                case 3:
-                    view = new CardDetailView(_tempItem, _folders, state);
-                    break;
-                
-                // Identity
-                case 4:
-                    view = new IdentityDetailView(_tempItem, _folders, state);
-                    break;
-            }
-
-            // Update title.
-            switch (state)
-            {
-                case VaultItemDetailViewState.Create:
-                    view.Title = "Create New Item";
-                    break;
-
-                case VaultItemDetailViewState.Edit:
-                    view.Title = "Edit Item - " + _tempItem.ItemName;
-                    break;
-
-                case VaultItemDetailViewState.View:
-                    view.Title = "View Item - " + _tempItem.ItemName;
-                    break;
-            }
-
             // Show the view modal.
             view.Show();
             
@@ -259,6 +224,375 @@ namespace Retrowarden.Views
                         break;
                 }
             }
+        }
+
+        private ItemDetailView CreateDetailView(VaultItemDetailViewState state)
+        {
+            ItemDetailView retVal = null;
+            
+            // Check to see what type of item we have.
+            switch (_tempItem.ItemType)
+            {
+                // Login
+                case 1:
+                    // Create item detail dialog.
+                    retVal = new LoginDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Note
+                case 2:
+                    retVal = new SecureNoteDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Card
+                case 3:
+                    retVal = new CardDetailView(_tempItem, _folders, state);
+                    break;
+                
+                // Identity
+                case 4:
+                    retVal = new IdentityDetailView(_tempItem, _folders, state);
+                    break;
+            }
+            
+            // Return the view.
+            return retVal;
+        }
+
+        private void UpdateStatusBarOptions()
+        {
+            // Get the data source for list.
+            ItemListDataSource items = (ItemListDataSource) lvwItems.Source;
+            
+            // Check to see how many rows have been selected.
+            switch (items.MarkedItemCount)
+            {
+                // If 0 or 1, enable single item menu items.
+                case 0:
+                case 1:
+                    // Add them to the status bar.
+                    staMain.Items =
+                        [stiNew, stiView, stiEdit, stiCopyUser, stiCopyPwd, stiFolderMove, stiCollectionMove];
+                    break;
+
+                // If > 1, enable only bulk menu items (add to folder/collection).
+                default:
+                    // Add them to the status bar.
+                    staMain.Items = [stiNew, stiFolderMove, stiCollectionMove];
+                    break;
+            }
+
+                // Redraw menu bar.
+                staMain.SetNeedsDisplay();
+        }
+        #endregion
+        
+        #region Top Menu Handlers
+        private void HandleConnectionRequest()
+        {
+            // Check to make sure we are not logged in already.
+            if (_vaultProxy.IsLoggedIn)
+            {
+                MessageBox.ErrorQuery("Action failed","You are already logged in.", "Ok");
+            }
+
+            else
+            {
+                ConnectDialog connectDialog = new ConnectDialog();
+
+                connectDialog.Show();
+
+                if (connectDialog.OkPressed)
+                {
+                    // Run login worker and show working dialog.
+                    RunLoginWorker(connectDialog.UserId, connectDialog.Password);
+
+                    // Check to see if the login was successful.
+                    if (_vaultProxy.ExitCode == "0")
+                    {
+                        // Run workers for items, folders, and collections.
+                        RunGetItemsWorker();
+
+                        // Check to see if items were found.
+                        if (_vaultProxy.ExitCode == "0")
+                        {
+                            // Check to see if we have a list.
+                            if (_vaultItems.Count > 0)
+                            {
+                                // Enable controls.
+                                tvwItems.Enabled = true;
+                                lvwItems.Enabled = true;
+                                
+                                // Run workers for folders and collections.
+                                RunGetFoldersWorker();
+                                RunGetCollectionsWorker();
+                                RunGetOrganizationsWorker();
+
+                                // Set item owner name.
+                                SetOwnerNameForItems();
+
+                                // Load controls with data.
+                                LoadTreeView();
+                                LoadItemListView(_vaultItems);
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        // Show error dialog.
+                        MessageBox.ErrorQuery("Login failed.", _vaultProxy.ErrorMessage, "Ok");
+                    }
+                }
+            }
+        }
+
+        private void HandleQuitRequest()
+        {
+            int response = MessageBox.Query("Confirm Action", "Quit.  Are you Sure?", "Ok", "Cancel");
+            
+            // Check to see if the user confirmed action.
+            if (response == 0)
+            {
+                // Logout of vault.
+                RunLogoutWorker();
+                
+                // Clear any clipboard contents.
+                Clipboard.TrySetClipboardData("");
+                
+                // Close application.
+                Application.RequestStop(this);
+                Environment.Exit(Environment.ExitCode);
+            }
+        }
+
+        private void HandleBoomerMode()
+        {
+            // Toggle boomer mode.
+            _boomerMode = !_boomerMode;
+            
+            // Set menu state.
+            mnuMain.Menus[1].Children[0].Checked = _boomerMode;
+            
+            // Set this to the desired state
+            Application.IsMouseDisabled = _boomerMode;
+        }
+        #endregion
+
+        #region Treeview Event Handlers
+       private void HandleTreeviewSelectionChanged(object? sender, SelectionChangedEventArgs<ITreeNode> e)
+        {
+            // Get node that was selected.
+            ITreeNode selected = e.NewValue;
+            
+            // Get the node data for this node.
+            Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>) selected.Tag;
+            
+            // Check to see if this node has children.
+            if (nodeData.Item1 != NodeType.Item)
+            {
+                // Get the list of children.
+                SortedDictionary<string, VaultItem> list = GetVaultItemsForTreeNode(selected);
+                
+                // Update tableview with scoped list.
+                LoadItemListView(list);
+            }
+        }
+        
+        private void HandleTreeviewNodeActivated(ObjectActivatedEventArgs<ITreeNode> obj)
+        {
+            // Get the node that was double-clicked.
+            ITreeNode activated = obj.ActivatedObject;
+            
+            // Get the node data for this node.
+            Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>) activated.Tag;
+            
+            // Make sure this is a leaf node.
+            if (nodeData.Item1 == NodeType.Item)
+            {
+                // Update the selected item.
+                _tempItem = _vaultItems[nodeData.Item2];
+                
+                // Call the detail form show.
+                ShowDetailForm(VaultItemDetailViewState.Edit);
+            }
+        }
+        #endregion
+        
+        #region Statusbar Menu Handlers
+        private void HandleCreateKeypress()
+        { 
+            // Create new temp item.
+            _tempItem = new VaultItem();
+                
+            // Try to establish context from the tree view.
+            if (tvwItems.SelectedObject != null)
+            {
+                // Get the node which is selected.
+                ITreeNode node = tvwItems.SelectedObject;
+
+                // Check the node type from tag.
+                Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>)node.Tag;
+
+                // Check to see if it is an item group.
+                if (nodeData.Item1 == NodeType.ItemGroup)
+                {
+                    // Based on the string we know what type of item to create.
+                    switch (node.Text)
+                    {
+                        case "Logins":
+                            _tempItem.ItemType = 1;
+                            break;
+                        case "Secure Notes":
+                            _tempItem.ItemType = 2;
+                            break;
+                        case "Cards":
+                            _tempItem.ItemType = 3;
+                            break;
+                        case "Identites":
+                            _tempItem.ItemType = 4;
+                            break;
+                    }
+                }
+
+                else if (nodeData.Item1 == NodeType.Item)
+                {
+                    // Get item.
+                    _tempItem = _vaultItems[nodeData.Item2];
+                }
+
+                else
+                {
+                    // Have the user pick the item type.
+                    SelectItemTypeDialog dialog = new SelectItemTypeDialog();
+                    dialog.Show();
+
+                    if (dialog.OkPressed)
+                    {
+                        _tempItem.ItemType = dialog.ItemType + 1;
+                    }
+
+                    else
+                    {
+                        // Just default to Login.
+                        _tempItem.ItemType = 1;
+                    }
+                }
+            }
+            
+            else
+            {
+                // Have the user pick the item type.
+                SelectItemTypeDialog dialog = new SelectItemTypeDialog();
+                dialog.Show();
+
+                if (dialog.OkPressed)
+                {
+                    _tempItem.ItemType = dialog.ItemType + 1;
+                }
+
+                else
+                {
+                    // Just default to Login.
+                    _tempItem.ItemType = 1;
+                }
+            }
+            
+            ShowDetailForm(VaultItemDetailViewState.Create);
+        }
+        private void HandleViewItemKeypress()
+        {
+            // Call helper method.
+            ShowDetailForm(VaultItemDetailViewState.View);
+        }
+        
+        private void HandleEditItemKeypress()
+        {
+            ShowDetailForm(VaultItemDetailViewState.Edit);
+        }
+        private void HandleUserCopyKeypress()
+        {
+            // Get the item data source.
+            ItemListDataSource items = (ItemListDataSource)lvwItems.Source;
+            
+            // Get the current item.
+            VaultItem item = items.ItemList[lvwItems.SelectedItem];
+            
+            // Copy user name to clipboard.
+            Clipboard.TrySetClipboardData(item.Login.UserName);
+
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "Username copied to clipboard.", "Ok");
+        }
+        
+        private void HandlePwdCopyKeypress()
+        {
+            // Get the item data source.
+            ItemListDataSource items = (ItemListDataSource)lvwItems.Source;
+            
+            // Get the current item.
+            VaultItem item = items.ItemList[lvwItems.SelectedItem];
+
+            // Copy password to clipboard.
+            Clipboard.TrySetClipboardData(item.Login.Password);
+
+            // Indicate data copied.
+            MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
+        }
+        
+        private void HandleCollectionMoveKeypress()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleFolderMoveKeypress()
+        {
+            // Create folder list dialog
+            SelectFolderDialog sfDialog = new SelectFolderDialog(_folders);
+            sfDialog.Show();
+
+            if (sfDialog.OkPressed)
+            {
+                // Get the datasource from the listview.
+                ItemListDataSource markedItems = (ItemListDataSource)lvwItems.Source;
+                
+                // Get folder.
+                VaultFolder folder = _folders[sfDialog.SelectedFolderIndex];
+                
+                // Save all items.
+                
+                // Redraw the current listview (because things may have moved).
+                
+                // Uncheck current selected rows.
+            }
+        }
+        #endregion
+
+        #region Listview Event Handlers
+        private void HandleListViewOpenItem(ListViewItemEventArgs obj)
+        {
+            ShowDetailForm(VaultItemDetailViewState.Edit);
+        }
+        
+        private void HandleListviewItemMarked(object sender, EventArgs e)
+        {
+            // Get the item data source.
+            ItemListDataSource items = (ItemListDataSource)lvwItems.Source;
+            
+            // Get the current item.
+            _tempItem = items.ItemList[lvwItems.SelectedItem];
+            
+            // Update the status bar options.
+            UpdateStatusBarOptions();
+        }
+
+        private void HandleListViewSelectedItemChanged(ListViewItemEventArgs obj)
+        {
+            // Get the item data source.
+            ItemListDataSource items = (ItemListDataSource)lvwItems.Source;
+            
+            // Get the current item.
+            _tempItem = items.ItemList[lvwItems.SelectedItem];
         }
         #endregion
         
@@ -368,365 +702,6 @@ namespace Retrowarden.Views
             LoadTreeView();
             LoadItemListView(_vaultItems);
             this.tvwItems.SelectedObject = node;
-        }
-        #endregion
-        
-        #region Top Menu Handlers
-        private void HandleConnectionRequest()
-        {
-            // Check to make sure we are not logged in already.
-            if (_vaultProxy.IsLoggedIn)
-            {
-                MessageBox.ErrorQuery("Action failed","You are already logged in.", "Ok");
-            }
-
-            else
-            {
-                ConnectDialog connectDialog = new ConnectDialog();
-
-                connectDialog.Show();
-
-                if (connectDialog.OkPressed)
-                {
-                    // Run login worker and show working dialog.
-                    RunLoginWorker(connectDialog.UserId, connectDialog.Password);
-
-                    // Check to see if the login was successful.
-                    if (_vaultProxy.ExitCode == "0")
-                    {
-                        // Run workers for items, folders, and collections.
-                        RunGetItemsWorker();
-
-                        // Check to see if items were found.
-                        if (_vaultProxy.ExitCode == "0")
-                        {
-                            // Run workers for folders and collections.
-                            RunGetFoldersWorker();
-                            RunGetCollectionsWorker();
-                            RunGetOrganizationsWorker();
-
-                            // Set item owner name.
-                            SetOwnerNameForItems();
-
-                            // Load controls with data.
-                            LoadTreeView();
-                            LoadItemListView(_vaultItems);
-                        }
-                    }
-
-                    else
-                    {
-                        // Show error dialog.
-                        MessageBox.ErrorQuery("Login failed.", _vaultProxy.ErrorMessage, "Ok");
-                    }
-                }
-            }
-        }
-
-        private void HandleQuitRequest()
-        {
-            int response = MessageBox.Query("Confirm Action", "Quit.  Are you Sure?", "Ok", "Cancel");
-            
-            // Check to see if the user confirmed action.
-            if (response == 0)
-            {
-                // Logout of vault.
-                RunLogoutWorker();
-                
-                // Clear any clipboard contents.
-                Clipboard.TrySetClipboardData("");
-                
-                // Close application.
-                Application.RequestStop(this);
-                Environment.Exit(Environment.ExitCode);
-            }
-        }
-
-        private void HandleBoomerMode()
-        {
-            // Toggle boomer mode.
-            _boomerMode = !_boomerMode;
-            
-            // Set menu state.
-            mnuMain.Menus[1].Children[0].Checked = _boomerMode;
-            
-            // Set this to the desired state
-            Application.IsMouseDisabled = _boomerMode;
-        }
-        #endregion
-
-        #region Treeview Event Handlers
-       private void HandleTreeviewSelectionChanged(object? sender, SelectionChangedEventArgs<ITreeNode> e)
-        {
-            // Get node that was selected.
-            ITreeNode selected = e.NewValue;
-            
-            // Get the node data for this node.
-            Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>) selected.Tag;
-            
-            // Check to see if this node has children.
-            if (nodeData.Item1 != NodeType.Item)
-            {
-                // Get the list of children.
-                SortedDictionary<string, VaultItem> list = GetVaultItemsForTreeNode(selected);
-                
-                // Update tableview with scoped list.
-                LoadItemListView(list);
-            }
-        }
-        
-        private void HandleTreeviewNodeActivated(ObjectActivatedEventArgs<ITreeNode> obj)
-        {
-            // Get the node that was double-clicked.
-            ITreeNode activated = obj.ActivatedObject;
-            
-            // Get the node data for this node.
-            Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>) activated.Tag;
-            
-            // Make sure this is a leaf node.
-            if (nodeData.Item1 == NodeType.Item)
-            {
-                // Update the selected item.
-                _tempItem = _vaultItems[nodeData.Item2];
-                
-                // Call the detail form show.
-                ShowDetailForm(VaultItemDetailViewState.Edit);
-            }
-        }
-        #endregion
-        
-        #region Statusbar Menu Handlers
-                private void HandleCreateKeypress()
-        { 
-            // Create new temp item.
-            _tempItem = new VaultItem();
-                
-            // Try to establish context from the tree view.
-            if (tvwItems.SelectedObject != null)
-            {
-                // Get the node which is selected.
-                ITreeNode node = tvwItems.SelectedObject;
-
-                // Check the node type from tag.
-                Tuple<NodeType, string> nodeData = (Tuple<NodeType, string>)node.Tag;
-
-                // Check to see if it is an item group.
-                if (nodeData.Item1 == NodeType.ItemGroup)
-                {
-                    // Based on the string we know what type of item to create.
-                    switch (node.Text)
-                    {
-                        case "Logins":
-                            _tempItem.ItemType = 1;
-                            break;
-                        case "Secure Notes":
-                            _tempItem.ItemType = 2;
-                            break;
-                        case "Cards":
-                            _tempItem.ItemType = 3;
-                            break;
-                        case "Identites":
-                            _tempItem.ItemType = 4;
-                            break;
-                    }
-                }
-
-                else if (nodeData.Item1 == NodeType.Item)
-                {
-                    // Get item.
-                    _tempItem = _vaultItems[nodeData.Item2];
-                }
-
-                else
-                {
-                    // Have the user pick the item type.
-                    SelectItemTypeDialog dialog = new SelectItemTypeDialog();
-                    dialog.Show();
-
-                    if (dialog.OkPressed)
-                    {
-                        _tempItem.ItemType = dialog.ItemType + 1;
-                    }
-
-                    else
-                    {
-                        // Just default to Login.
-                        _tempItem.ItemType = 1;
-                    }
-                }
-            }
-            
-            else
-            {
-                // Have the user pick the item type.
-                SelectItemTypeDialog dialog = new SelectItemTypeDialog();
-                dialog.Show();
-
-                if (dialog.OkPressed)
-                {
-                    _tempItem.ItemType = dialog.ItemType + 1;
-                }
-
-                else
-                {
-                    // Just default to Login.
-                    _tempItem.ItemType = 1;
-                }
-            }
-            
-            ShowDetailForm(VaultItemDetailViewState.Create);
-        }
-        private void HandleViewItemKeypress()
-        {
-            // Call helper method.
-            ShowDetailForm(VaultItemDetailViewState.View);
-        }
-        
-        private void HandleEditItemKeypress()
-        {
-            ShowDetailForm(VaultItemDetailViewState.Edit);
-        }
-        private void HandleUserCopyKeypress()
-        {
-            // Get the current item from selected item list.
-            string itemId = _selectedRows[0];
-
-            // Get the item associated with this row.
-            VaultItem item = _vaultItems[itemId];
-
-            // Copy user name to clipboard.
-            Clipboard.TrySetClipboardData(item.Login.UserName);
-
-            // Indicate data copied.
-            MessageBox.Query("Action Completed", "Username copied to clipboard.", "Ok");
-        }
-        
-        private void HandlePwdCopyKeypress()
-        {
-            // Get the current item from selected item list.
-            string itemId = _selectedRows[0];
-
-            // Get the item associated with this row.
-            VaultItem item = _vaultItems[itemId];
-
-            // Copy password to clipboard.
-            Clipboard.TrySetClipboardData(item.Login.Password);
-
-            // Indicate data copied.
-            MessageBox.Query("Action Completed", "Password copied to clipboard.", "Ok");
-        }
-        
-        private void HandleCollectionMoveKeypress()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void HandleFolderMoveKeypress()
-        {
-            // Create folder list dialog
-            SelectFolderDialog sfDialog = new SelectFolderDialog(_folders);
-            sfDialog.Show();
-
-            if (sfDialog.OkPressed)
-            {
-                // List to hold items to be saved.
-                List<VaultItem> items = new List<VaultItem>();
-                
-                // Get folder.
-                VaultFolder folder = _folders[sfDialog.SelectedFolderIndex];
-                
-                // Loop through ticked items in list.
-                foreach (string id in _selectedRows)
-                {
-                    // Get item reference.
-                    VaultItem item = _vaultItems[id];
-                    
-                    // Update each selected item in list with this folder.
-                    item.FolderId = folder.Id;
-                    
-                    // Stage item to be saved.
-                    items.Add(item);
-                } 
-                
-                // Save all items.
-                
-                // Redraw the current listview (because things may have moved).
-                
-                // Uncheck current selected rows.
-            }
-        }
-        #endregion
-
-        #region Listview Event Handlers
-        private void HandleListViewSelectedItemChanged(ListViewItemEventArgs obj)
-        {
-            // Hold a temp reference to current item.
-            _tempItem = (VaultItem) obj.Value;
-        }
-
-        private void HandleListViewKeyUp(KeyEventEventArgs obj)
-        {
-            // Check to see which key was pressed.
-            if (obj.KeyEvent.Key == Key.Space)
-            {
-                // Check to make sure we have an item.
-                if (_tempItem != null)
-                {
-                    // Check to see if it is in the list of selected items.
-                    if (_selectedRows.Contains(_tempItem.Id))
-                    {
-                        // Remove it (the user has unselected the row).  
-                        _selectedRows.Remove(_tempItem.Id);
-                    }
-
-                    else
-                    {
-                        // If not there, add it.
-                        _selectedRows.Add(_tempItem.Id);    
-                    }
-            
-                    // Check to see how many rows have been selected.
-                    switch (_selectedRows.Count)
-                    {
-                        // If 0, disable menu items.
-                        case 0:
-                            // Add them to the status bar.
-                            staMain.Items = [stiHelp];
-                            break;
-                
-                        // If 1, enable menu items.
-                        case 1:
-                            // Add them to the status bar.
-                            staMain.Items = [stiHelp, stiView, stiEdit, stiCopyUser, stiCopyPwd, stiFolderMove, stiCollectionMove];
-                            break;
-                
-                        // If > 1, enable only bulk menu items (add to folder).
-                        default:
-                            // Add them to the status bar.
-                            staMain.Items = [stiHelp, stiFolderMove, stiCollectionMove];
-                            break;
-                    }        
-                
-                    // Redraw menu bar.
-                    staMain.SetNeedsDisplay();
-                }
-            }
-        }
-
-        private void HandleListViewOpenItem(ListViewItemEventArgs obj)
-        {
-            ShowDetailForm(VaultItemDetailViewState.Edit);
-        }
-
-        private void HandleListviewEnter(FocusEventArgs obj)
-        {
-            // Set the first row as the selected row.
-            lvwItems.SelectedItem = 0;
-        }
-        
-        private void HandleListviewMouseClick(MouseEventArgs obj)
-        {
-            int rownum = lvwItems.SelectedItem;
         }
         #endregion
     }
